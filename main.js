@@ -27,7 +27,7 @@ import {Grid} from './grid.js';
 //First shows menu
 function main()
 {
-		showMenus();
+	showMenus();
 }
 
 //Starts the game
@@ -97,18 +97,22 @@ function initGame()
     //ANIMATE AND RUN GAME
   
     //Render scene repeatedly
-    const animate = function () {
+    const animate = function () 
+    {
         requestAnimationFrame(animate);
 			
-				var temp_x=offset_x;
-				var temp_y=offset_y;
+	var temp_x=offset_x;
+	var temp_y=offset_y;
       
-				//Check if can turn in queued direction
-        if(dirQueue!=dir){
-					if(dirQueue=="right" || dirQueue=="left"){
-						if(offset_y==0 && (grid.canMove(pos_x,pos_y,dirQueue) || offset_x!=0)){
-							dir=dirQueue;
-						}
+	//Check if can turn in queued direction
+        if(dirQueue!=dir)
+	{
+		if(dirQueue=="right" || dirQueue=="left")
+		{
+			if(offset_y==0 && (grid.canMove(pos_x,pos_y,dirQueue) || offset_x!=0))
+			{
+				dir=dirQueue;
+			}
 					}
 					if(dirQueue=="up" || dirQueue=="down"){
 						if(offset_x==0 && (grid.canMove(pos_x,pos_y,dirQueue) || offset_y!=0)){
