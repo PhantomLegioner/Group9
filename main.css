@@ -1,0 +1,38 @@
+﻿button{
+  background-color: lightblue;
+  padding: 1em 2em;
+  cursor: pointer;
+  position: absolute;
+	top: 80%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+}
+
+button:hover{
+  background-color: rgb(192, 192, 192);}
+
+.popup{
+	background: rgba(0,0,0,0.7);
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	width: 70vmin;
+	height: 70vmin;
+	padding: 1vmin;
+	margin: 0px;
+	color: white;
+	border-radius: 2vmin;
+}
+
+h2{
+  text-align: center;
+}
+canvas{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	width: 50vmin;
+	height: 50vmin;
+}
