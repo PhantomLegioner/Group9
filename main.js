@@ -16,10 +16,6 @@ import {Grid} from './grid.js';
   var dir="none";
   var dirQueue="none"
   
-  //Cooldown and counter for when pacman gets to move
-  var cooldown=5;
-  var counter=0;
-  
   //Maze is stored as a Grid object from grid.js
   var grid=[];
 
@@ -66,7 +62,6 @@ function initGame()
 
     //Create pacman (see the function createPacman() below)
     var pacman=createPacman(grid.cubeSize/2,scene);
-  
     //We need place pacman in the correct tile
     //Using the grid.getTilePosition function
     //we can find the "real-world" position of the
@@ -99,99 +94,101 @@ function initGame()
     //Render scene repeatedly
     const animate = function () 
     {
-        requestAnimationFrame(animate);
+      requestAnimationFrame(animate);
 			
-	var temp_x=offset_x;
-	var temp_y=offset_y;
+      var temp_x=offset_x;
+      var temp_y=offset_y;
       
-	//Check if can turn in queued direction
-        if(dirQueue!=dir)
-	{
-		if(dirQueue=="right" || dirQueue=="left")
-		{
-			if(offset_y==0 && (grid.canMove(pos_x,pos_y,dirQueue) || offset_x!=0))
-			{
-				dir=dirQueue;
-			}
-					}
-					if(dirQueue=="up" || dirQueue=="down"){
-						if(offset_x==0 && (grid.canMove(pos_x,pos_y,dirQueue) || offset_y!=0)){
-							dir=dirQueue;
-						}
-					}
-				}
-			
-				//Move in current direction if possible
-				if(dir=="up"){
-					if(offset_y!=0 || (offset_y==0 && grid.canMove(pos_x,pos_y,dir))){
-						offset_y+=speed;
-					}
-					else{
-						dir="none";
-					}
-				}
-				if(dir=="down"){
-					if(offset_y!=0 || (offset_y==0 && grid.canMove(pos_x,pos_y,dir))){
-						offset_y-=speed;
-					}
-					else{
-						dir="none";
-					}
-				}
-				if(dir=="right"){
-					if(offset_x!=0 || (offset_x==0 && grid.canMove(pos_x,pos_y,dir))){
-						offset_x+=speed;
-					}
-					else{
-						dir="none";
-					}
-				}
-				if(dir=="left"){
-					if(offset_x!=0 || (offset_x==0 && grid.canMove(pos_x,pos_y,dir))){
-						offset_x-=speed;
-					}
-					else{
-						dir="none";
-					}
-				}
-			
-				//If we have moved an entire tile
-				//then set new position
-				if(offset_y>=1){
-					offset_y=0;
-					pos_y+=1;
-				}
-				if(offset_y<=-1){
-					offset_y=0;
-					pos_y-=1;
-				}
-				if(temp_y!=0 && Math.sign(offset_y)!=Math.sign(temp_y)){
-					offset_y=0;
-				}
-				if(offset_x>=1){
-					offset_x=0;
-					pos_x+=1;
-				}
-				if(offset_x<=-1){
-					offset_x=0;
-					pos_x-=1;
-				}
-				if(temp_x!=0 && Math.sign(offset_x)!=Math.sign(temp_x)){
-					offset_x=0;
-				}
+      //Check if can turn in queued direction
+      if(dirQueue!=dir)
+      {
+        if(dirQueue=="right" || dirQueue=="left")
+        {
+          if(offset_y==0 && (grid.canMove(pos_x,pos_y,dirQueue) || offset_x!=0))
+          {
+            dir=dirQueue;
+          }
+        }
+        if(dirQueue=="up" || dirQueue=="down")
+        {
+          if(offset_x==0 && (grid.canMove(pos_x,pos_y,dirQueue) || offset_y!=0))
+          {
+            dir=dirQueue;
+          }
+        }
+      }
+    
+      //Move in current direction if possible
+      if(dir=="up"){
+        if(offset_y!=0 || (offset_y==0 && grid.canMove(pos_x,pos_y,dir))){
+          offset_y+=speed;
+        }
+        else{
+          dir="none";
+        }
+      }
+      if(dir=="down"){
+        if(offset_y!=0 || (offset_y==0 && grid.canMove(pos_x,pos_y,dir))){
+          offset_y-=speed;
+        }
+        else{
+          dir="none";
+        }
+      }
+      if(dir=="right"){
+        if(offset_x!=0 || (offset_x==0 && grid.canMove(pos_x,pos_y,dir))){
+          offset_x+=speed;
+        }
+        else{
+          dir="none";
+        }
+      }
+      if(dir=="left"){
+        if(offset_x!=0 || (offset_x==0 && grid.canMove(pos_x,pos_y,dir))){
+          offset_x-=speed;
+        }
+        else{
+          dir="none";
+        }
+      }
+    
+      //If we have moved an entire tile
+      //then set new position
+      if(offset_y>=1){
+        offset_y=0;
+        pos_y+=1;
+      }
+      if(offset_y<=-1){
+        offset_y=0;
+        pos_y-=1;
+      }
+      if(temp_y!=0 && Math.sign(offset_y)!=Math.sign(temp_y)){
+        offset_y=0;
+      }
+      if(offset_x>=1){
+        offset_x=0;
+        pos_x+=1;
+      }
+      if(offset_x<=-1){
+        offset_x=0;
+        pos_x-=1;
+      }
+      if(temp_x!=0 && Math.sign(offset_x)!=Math.sign(temp_x)){
+        offset_x=0;
+      }
 
-        //Get the "real-world" position of the tile pacman is in
-        //and move pacman there
-        var pos=grid.getTilePosition(pos_x+offset_x,pos_y+offset_y);
-        pacman.position.x=pos[0];
-        pacman.position.y=pos[1];
-      
-        //Move camera to pacman
-        camera.position.x=pacman.position.x;
-        camera.position.y=pacman.position.y-2;
-      
-        //Render scene
-        renderer.render( scene, camera );
+      //Get the "real-world" position of the tile pacman is in
+      //and move pacman there
+      var pos=grid.getTilePosition(pos_x+offset_x,pos_y+offset_y);
+      pacman.position.x=pos[0];
+      pacman.position.y=pos[1];
+    
+      //Move camera to pacman
+      camera.position.x=pacman.position.x;
+      camera.position.y=pacman.position.y-2;
+    
+      //Render scene
+      renderer.render( scene, camera );
     };
 
 		showMenus();
@@ -201,7 +198,8 @@ function initGame()
 }
 
 //Create a collectable
-function createCollectables(size,scene){
+function createCollectables(size,scene)
+{
     //Get a cylinder mesh
     const geometry = new THREE.SphereGeometry(size/5, 32, 32);
   
@@ -224,7 +222,8 @@ function createCollectables(size,scene){
 
 //This creates the model for pacman
 //You can design pacman here
-function createPacman(size,scene){
+function createPacman(size,scene)
+{
     //Get a cylinder mesh
     const geometry = new THREE.CylinderGeometry(size/2, size/2, size/2, 32);
   
@@ -246,17 +245,20 @@ function createPacman(size,scene){
 //CONTROLS
 
 //This makes program react to keypresses
-function setupControls(){
+function setupControls()
+{
     //This array will collect all the keys pressed by user.
     //The value of a key is false if it is not pressed currently
     //and true if it is pressed currently
-    var state = {
+    var state = 
+    {
         keys: {},
     };
 
     //This function will be called when a key is pressed or released
     //Here we read which key was pressed or released and act accordingly
-    var setDir = function () {
+    var setDir = function () 
+    {
 			
         if (state.keys.w){
           dirQueue = "up";
@@ -274,7 +276,8 @@ function setupControls(){
 
     //This function function handles key presses
     //e = keypressed event
-    var keyHandler = function (e){
+    var keyHandler = function (e)
+    {
         //Toggle a boolean for the pressed key
         state.keys[e.key] = e.type === 'keyup' ? false : true;
       
