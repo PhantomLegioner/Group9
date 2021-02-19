@@ -260,16 +260,16 @@ function setupControls()
     var setDir = function () 
     {
 			
-        if (state.keys.w){
-          dirQueue = "up";
-        }
-        if (state.keys.s){
-          dirQueue = "down";
-        }
-        if (state.keys.a){
-          dirQueue = "left";
-        }
-        if (state.keys.d){
+      if (state.keys.w || state.keys.ArrowUp){
+        dirQueue = "up";
+      }
+      if (state.keys.s || state.keys.ArrowDown){
+        dirQueue = "down";
+      }
+      if (state.keys.a || state.keys.ArrowLeft){
+        dirQueue = "left";
+      }
+      if (state.keys.d || state.keys.ArrowRight){
           dirQueue = "right";
         }
     };
