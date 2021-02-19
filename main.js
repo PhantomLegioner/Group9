@@ -273,7 +273,7 @@ function setupControls()
           dirQueue = "right";
         }
     };
-    //test
+    //tests
     //This function function handles key presses
     //e = keypressed event
     var keyHandler = function (e)
