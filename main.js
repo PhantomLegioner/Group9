@@ -7,6 +7,9 @@ import {MovingObject} from './movableobject.js';
   var lost=false;
   var score;
 
+  //To manage collectables
+  var allCollectables = [];
+
   //Game objects
   var pacman=null;
   var movingObjects=[];
@@ -66,15 +69,17 @@ function initGame()
     camera.position.z = 5;
 		camera.rotation.x += 0.5;
 	
-	   //Create collectables
+    //Create collectables
     for(var i = 0; i<grid.height; i++){
       for (var j = 0; j<grid.width; j++){
         var collectables=createCollectables(grid.cubeSize/2,scene);
+
         var pos2=grid.getTilePosition(i,j);
         collectables.position.x=pos2[0];
         collectables.position.y=pos2[1];
+        allCollectables.push(new Collectable(false,i,j,scene.children[scene.children.length-1].id));
       }
-    }  
+    }
 
     //Set up controls
     setupControls()
@@ -94,6 +99,8 @@ function initGame()
       //Move camera to pacman
       camera.position.x=pacman.position.x;
       camera.position.y=pacman.position.y-2;
+
+      eatCollectables(pacman.pos_x, pacman.pos_y, scene);
     
       //Render scene
       renderer.render( scene, camera );
@@ -125,6 +132,31 @@ function createCollectables(size,scene)
     //Add to scene
     scene.add(cylinder);
     return cylinder;
+}
+
+function eatCollectables(posX, posY, scene){
+  var index = allCollectables.findIndex(x => x.positionX === posX && x.positionY === posY);
+  var indexChildren = scene.children.findIndex(x => x.id === allCollectables[index].childrenNumber);
+  if(!allCollectables[index].wasEaten){
+      allCollectables[index].wasEaten = true;
+      score += 1;
+      console.log("Score : " + score);
+      //Delete the collectable
+      scene.remove(scene.children[indexChildren]);
+      //Check if all collectables was eaten, if yes the player win
+      if(score == 100){
+        console.log("Won");
+      }
+  }
+}
+
+//Objects to push in allCollectables list and to manage collectables
+function Collectable(wasEaten, positionX, positionY, childrenNumber){
+  this.wasEaten = wasEaten;
+  this.positionX = positionX;
+  this.positionY = positionY;
+  //To know the position in the children list of the scene
+  this.childrenNumber = childrenNumber;
 }
 
 //PACMAN MODEL
