@@ -1,4 +1,5 @@
 import {Grid} from './grid.js';
+import {MovingObject} from './movableobject.js';
 
 //GLOBAL VARIABLES
 
@@ -6,15 +7,9 @@ import {Grid} from './grid.js';
   var lost=false;
   var score;
 
-  //Pacman position in tiles ((0,0) is bottom left)
-  //and movement direction
-  var pos_x=0;
-  var pos_y=0;
-  var offset_x=0;
-  var offset_y=0;
-  var speed=0.05;
-  var dir="none";
-  var dirQueue="none"
+  //Game objects
+  var pacman=null;
+  var movingObjects=[];
   
   //Maze is stored as a Grid object from grid.js
   var grid=[];
@@ -60,15 +55,12 @@ function initGame()
         scene.add(light.target);
     }
 
+
     //Create pacman (see the function createPacman() below)
-    var pacman=createPacman(grid.cubeSize/2,scene);
-    //We need place pacman in the correct tile
-    //Using the grid.getTilePosition function
-    //we can find the "real-world" position of the
-    //(0,0) tile 
-    var pos=grid.getTilePosition(pos_x,pos_y);
-    pacman.position.x=pos[0];
-    pacman.position.y=pos[1];
+    var pacmanModel=createPacman(grid.cubeSize/2,scene);
+    pacman=new MovingObject(pacmanModel,grid,0,0,0.05);
+
+    movingObjects.push(pacman);
   
     //Place camera in front of box
     camera.position.z = 5;
@@ -78,11 +70,9 @@ function initGame()
     for(var i = 0; i<grid.height; i++){
       for (var j = 0; j<grid.width; j++){
         var collectables=createCollectables(grid.cubeSize/2,scene);
-
         var pos2=grid.getTilePosition(i,j);
         collectables.position.x=pos2[0];
         collectables.position.y=pos2[1];
-				console.log("test");
       }
     }  
 
@@ -96,92 +86,10 @@ function initGame()
     {
       requestAnimationFrame(animate);
 			
-      var temp_x=offset_x;
-      var temp_y=offset_y;
-      
-      //Check if can turn in queued direction
-      if(dirQueue!=dir)
+      for(var i = 0; i<movingObjects.length; i++)
       {
-        if(dirQueue=="right" || dirQueue=="left")
-        {
-          if(offset_y==0 && (grid.canMove(pos_x,pos_y,dirQueue) || offset_x!=0))
-          {
-            dir=dirQueue;
-          }
-        }
-        if(dirQueue=="up" || dirQueue=="down")
-        {
-          if(offset_x==0 && (grid.canMove(pos_x,pos_y,dirQueue) || offset_y!=0))
-          {
-            dir=dirQueue;
-          }
-        }
+        movingObjects[i].update();
       }
-    
-      //Move in current direction if possible
-      if(dir=="up"){
-        if(offset_y!=0 || (offset_y==0 && grid.canMove(pos_x,pos_y,dir))){
-          offset_y+=speed;
-        }
-        else{
-          dir="none";
-        }
-      }
-      if(dir=="down"){
-        if(offset_y!=0 || (offset_y==0 && grid.canMove(pos_x,pos_y,dir))){
-          offset_y-=speed;
-        }
-        else{
-          dir="none";
-        }
-      }
-      if(dir=="right"){
-        if(offset_x!=0 || (offset_x==0 && grid.canMove(pos_x,pos_y,dir))){
-          offset_x+=speed;
-        }
-        else{
-          dir="none";
-        }
-      }
-      if(dir=="left"){
-        if(offset_x!=0 || (offset_x==0 && grid.canMove(pos_x,pos_y,dir))){
-          offset_x-=speed;
-        }
-        else{
-          dir="none";
-        }
-      }
-    
-      //If we have moved an entire tile
-      //then set new position
-      if(offset_y>=1){
-        offset_y=0;
-        pos_y+=1;
-      }
-      if(offset_y<=-1){
-        offset_y=0;
-        pos_y-=1;
-      }
-      if(temp_y!=0 && Math.sign(offset_y)!=Math.sign(temp_y)){
-        offset_y=0;
-      }
-      if(offset_x>=1){
-        offset_x=0;
-        pos_x+=1;
-      }
-      if(offset_x<=-1){
-        offset_x=0;
-        pos_x-=1;
-      }
-      if(temp_x!=0 && Math.sign(offset_x)!=Math.sign(temp_x)){
-        offset_x=0;
-      }
-
-      //Get the "real-world" position of the tile pacman is in
-      //and move pacman there
-      var pos=grid.getTilePosition(pos_x+offset_x,pos_y+offset_y);
-      pacman.position.x=pos[0];
-      pacman.position.y=pos[1];
     
       //Move camera to pacman
       camera.position.x=pacman.position.x;
@@ -196,6 +104,7 @@ function initGame()
     //Call animate
     animate();	
 }
+
 
 //Create a collectable
 function createCollectables(size,scene)
@@ -260,17 +169,21 @@ function setupControls()
     var setDir = function () 
     {
 			
-        if (state.keys.w){
-          dirQueue = "up";
+        if(state.keys.w || state.keys.ArrowUp)
+        {
+          pacman.queueDirection("up");
         }
-        if (state.keys.s){
-          dirQueue = "down";
+        if(state.keys.s || state.keys.ArrowDown)
+        {
+          pacman.queueDirection("down");
         }
-        if (state.keys.a){
-          dirQueue = "left";
+        if(state.keys.a || state.keys.ArrowLeft)
+        {
+          pacman.queueDirection("left");
         }
-        if (state.keys.d){
-          dirQueue = "right";
+        if(state.keys.d || state.keys.ArrowRight)
+        {
+          pacman.queueDirection("right");
         }
     };
 
