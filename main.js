@@ -151,6 +151,27 @@ function createPacman(size,scene)
     return cylinder;
 }
 
+//This creates the model for ghosts
+function createGhost(size,scene)
+{
+    //Get a cylinder mesh
+    const geometry = new THREE.CylinderGeometry(size/2, size/2, size/2, 32);
+  
+    //Get a yellow solid material
+    const material = new THREE.MeshPhongMaterial({color: 0x0000FF, side: THREE.DoubleSide,});
+  
+    //Make a yellow cylinder
+    const cylinder = new THREE.Mesh(geometry, material);
+  
+    //Rotate and place at the right height
+    cylinder.position.z=size/4;
+    cylinder.rotation.x=Math.PI/2;
+  
+    //Add to scene
+    scene.add(cylinder);
+    return cylinder;
+}
+
 //CONTROLS
 
 //This makes program react to keypresses

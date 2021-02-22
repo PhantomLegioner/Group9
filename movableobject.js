@@ -15,6 +15,94 @@ export class MovingObject
     var pos=this.grid.getTilePosition(pos_x,pos_y);
     this.model.position.x=pos[0];
     this.model.position.y=pos[1];
+    this.callbacks=[]
+  }
+
+  //All callbacks are called if
+  //movement stops
+  registerCallback(callback)
+  {
+    this.callbacks.push(callback);
+  }
+
+  canMove(dir)
+  {
+    var move=false;
+    if(dir=="up"){
+      if(this.offset_y!=0 || (this.offset_y==0 && this.grid.canMove(this.pos_x,this.pos_y,this.dir))){
+        move=true;
+      }
+    }
+    if(dir=="down"){
+      if(this.offset_y!=0 || (this.offset_y==0 && this.grid.canMove(this.pos_x,this.pos_y,this.dir))){
+        move=true;
+      }
+    }
+    if(dir=="right"){
+      if(this.offset_x!=0 || (this.offset_x==0 && this.grid.canMove(this.pos_x,this.pos_y,this.dir))){
+        move=true;
+      }
+    }
+    if(dir=="left"){
+      if(this.offset_x!=0 || (this.offset_x==0 && this.grid.canMove(this.pos_x,this.pos_y,this.dir))){
+        move=true;
+      }
+    }
+    return move;
+  }
+
+  move(dir)
+  {
+    var temp_x=this.offset_x;
+    var temp_y=this.offset_y;
+    if(dir=="up")
+    {
+      this.offset_y+=this.speed;
+    }
+    if(dir=="down")
+    {
+      this.offset_y-=this.speed;
+    }
+    if(dir=="right")
+    {
+      this.offset_x+=this.speed;
+    }
+    if(dir=="left")
+    {
+      this.offset_x-=this.speed;
+    }
+
+    if(this.offset_y>=1){
+      this.offset_y=0;
+      this.pos_y+=1;
+    }
+    if(this.offset_y<=-1){
+      this.offset_y=0;
+      this.pos_y-=1;
+    }
+    if(temp_y!=0 && Math.sign(this.offset_y)!=Math.sign(temp_y)){
+      this.offset_y=0;
+    }
+    if(this.offset_x>=1){
+      this.offset_x=0;
+      this.pos_x+=1;
+    }
+    if(this.offset_x<=-1){
+      this.offset_x=0;
+      this.pos_x-=1;
+    }
+    if(temp_x!=0 && Math.sign(this.offset_x)!=Math.sign(temp_x)){
+      this.offset_x=0;
+    }
+  }
+
+  //All callbacks are called if movement stops
+  movementStopped()
+  {
+    for(var i=0; i<this.callbacks.length; i++)
+    {
+      this.callbacks[i]();
+    }
   }
 
   queueDirection(direction)
@@ -24,6 +112,7 @@ export class MovingObject
 
   update()
   {
+    var temp_dir=this.dir;
     var temp_x=this.offset_x;
     var temp_y=this.offset_y;
     
@@ -45,7 +134,8 @@ export class MovingObject
         }
       }
     }
-  
+    
+    /*
     //Move in current direction if possible
     if(this.dir=="up"){
       if(this.offset_y!=0 || (this.offset_y==0 && this.grid.canMove(this.pos_x,this.pos_y,this.dir))){
@@ -103,6 +193,21 @@ export class MovingObject
     }
     if(temp_x!=0 && Math.sign(this.offset_x)!=Math.sign(temp_x)){
       this.offset_x=0;
+    }
+    */
+    if(this.canMove(this.dir))
+    {
+      this.move(this.dir);
+    }
+    else
+    {
+      this.dir="none";
+    }
+
+    //Check if movement stopped
+    if(temp_dir!=this.dir && this.dir=="none")
+    {
+      this.movementStopped();
     }
 
     //Get the real world position of the object
