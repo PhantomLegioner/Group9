@@ -64,34 +64,47 @@ function initGame()
     var pacmanModel=createPacman(grid.cubeSize/2,scene);
     pacman=new MovingObject(pacmanModel,grid,0,0,0.05);
 
+    //Add pacman to collection of moving objects
     movingObjects.push(pacman);
 
+    //Create ghost 
     var ghostModel=createGhost(grid.cubeSize/2,scene);
     var ghost=new MovingObject(ghostModel,grid,5,5,0.05);
 
-    const ghostStoppedMoving=function(obj)
+    //This function defines how the ghost "AI" works
+    const ghostCallback=function(obj, event)
     {
       const dirs=["up","down","right","left"];
       const rand=Math.floor(Math.random() * dirs.length);
-      console.log("ghostStoppedMoving called"+", "+(ghost==obj))
+      //console.log("ghostCallback called")
       for(var i=0;i<4;i++)
       {
-        var dir=dirs[(rand+i) % 4];
-        console.log(dir)
+        //If we moved to new tile, then don't move in 
+        //the opposite direction
+        var dir=dirs[(rand+i)%4];
+        if(event!=null)
+        {
+          if(event.type=="new_tile")
+          {
+            if(dir=="up" && event.prev_dir=="down") continue;
+            if(dir=="down" && event.prev_dir=="up") continue;
+            if(dir=="left" && event.prev_dir=="right") continue;
+            if(dir=="right" && event.prev_dir=="left") continue;
+          }
+        }
         if(obj.canMove(dir))
         {
-          console.log("Moving "+dir)
           obj.queueDirection(dir);
           break;
         }
       }
     }
-    ghost.registerCallback(ghostStoppedMoving);
-    ghostStoppedMoving(ghost);
+    ghost.registerCallback(ghostCallback);
+    ghostCallback(ghost,null);
 
+    //Add ghost to moving objects and the collection of ghosts
     movingObjects.push(ghost);
     ghosts.push(ghost);
-
   
     //Place camera in front of box
     camera.position.z = 5;
