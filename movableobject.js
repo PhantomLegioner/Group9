@@ -6,10 +6,10 @@ export class MovingObject
     this.model=model;
     this.dir="none";
     this.dirQueue="none";
-    this.pos_x=0;
-    this.pos_y=0;
-    this.offset_x=pos_x;
-    this.offset_y=pos_y;
+    this.pos_x=pos_x;
+    this.pos_y=pos_y;
+    this.offset_x=0;
+    this.offset_y=0;
     this.speed=speed;
     this.position=model.position;
     var pos=this.grid.getTilePosition(pos_x,pos_y);
@@ -28,23 +28,27 @@ export class MovingObject
   canMove(dir)
   {
     var move=false;
-    if(dir=="up"){
-      if(this.offset_y!=0 || (this.offset_y==0 && this.grid.canMove(this.pos_x,this.pos_y,this.dir))){
+    if(dir=="up")
+    {
+      if(this.offset_y!=0 || (this.offset_y==0 && this.grid.canMove(this.pos_x,this.pos_y,dir))){
         move=true;
       }
     }
-    if(dir=="down"){
-      if(this.offset_y!=0 || (this.offset_y==0 && this.grid.canMove(this.pos_x,this.pos_y,this.dir))){
+    if(dir=="down")
+    {
+      if(this.offset_y!=0 || (this.offset_y==0 && this.grid.canMove(this.pos_x,this.pos_y,dir))){
         move=true;
       }
     }
-    if(dir=="right"){
-      if(this.offset_x!=0 || (this.offset_x==0 && this.grid.canMove(this.pos_x,this.pos_y,this.dir))){
+    if(dir=="right")
+    {
+      if(this.offset_x!=0 || (this.offset_x==0 && this.grid.canMove(this.pos_x,this.pos_y,dir))){
         move=true;
       }
     }
-    if(dir=="left"){
-      if(this.offset_x!=0 || (this.offset_x==0 && this.grid.canMove(this.pos_x,this.pos_y,this.dir))){
+    if(dir=="left")
+    {
+      if(this.offset_x!=0 || (this.offset_x==0 && this.grid.canMove(this.pos_x,this.pos_y,dir))){
         move=true;
       }
     }
@@ -101,7 +105,7 @@ export class MovingObject
   {
     for(var i=0; i<this.callbacks.length; i++)
     {
-      this.callbacks[i]();
+      this.callbacks[i](this);
     }
   }
 

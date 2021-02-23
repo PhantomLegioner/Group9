@@ -5,7 +5,7 @@ import {MovingObject} from './movableobject.js';
 
 	//For the menus
   var lost=false;
-  var score;
+  var score=0;
 
   //To manage collectables
   var allCollectables = [];
@@ -13,6 +13,7 @@ import {MovingObject} from './movableobject.js';
   //Game objects
   var pacman=null;
   var movingObjects=[];
+  var ghosts=[]
   
   //Maze is stored as a Grid object from grid.js
   var grid=[];
@@ -64,6 +65,33 @@ function initGame()
     pacman=new MovingObject(pacmanModel,grid,0,0,0.05);
 
     movingObjects.push(pacman);
+
+    var ghostModel=createGhost(grid.cubeSize/2,scene);
+    var ghost=new MovingObject(ghostModel,grid,5,5,0.05);
+
+    const ghostStoppedMoving=function(obj)
+    {
+      const dirs=["up","down","right","left"];
+      const rand=Math.floor(Math.random() * dirs.length);
+      console.log("ghostStoppedMoving called"+", "+(ghost==obj))
+      for(var i=0;i<4;i++)
+      {
+        var dir=dirs[(rand+i) % 4];
+        console.log(dir)
+        if(obj.canMove(dir))
+        {
+          console.log("Moving "+dir)
+          obj.queueDirection(dir);
+          break;
+        }
+      }
+    }
+    ghost.registerCallback(ghostStoppedMoving);
+    ghostStoppedMoving(ghost);
+
+    movingObjects.push(ghost);
+    ghosts.push(ghost);
+
   
     //Place camera in front of box
     camera.position.z = 5;
@@ -190,7 +218,7 @@ function createGhost(size,scene)
     const geometry = new THREE.CylinderGeometry(size/2, size/2, size/2, 32);
   
     //Get a yellow solid material
-    const material = new THREE.MeshPhongMaterial({color: 0x0000FF, side: THREE.DoubleSide,});
+    const material = new THREE.MeshPhongMaterial({color: 0xFF00FF, side: THREE.DoubleSide,});
   
     //Make a yellow cylinder
     const cylinder = new THREE.Mesh(geometry, material);
@@ -237,6 +265,15 @@ function setupControls()
         if(state.keys.d || state.keys.ArrowRight)
         {
           pacman.queueDirection("right");
+        }
+        if(state.keys.t)
+        {
+          const dirs=["up","down","right","left"];
+          for(var i=0;i<4;i++)
+          {
+            var dir=dirs[i];
+            console.log(dir+": "+pacman.canMove(dir))
+          }
         }
     };
 
