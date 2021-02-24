@@ -147,7 +147,7 @@ function initGame()
       renderer.render( scene, camera );
     };
 
-		showMenus();
+		//showMenus();
 	
     //Call animate
     animate();	

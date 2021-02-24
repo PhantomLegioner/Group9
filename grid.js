@@ -17,7 +17,7 @@ export class Grid
     }
     
     //Create walls and add to scene
-    const cells=newMaze(this.mazeSize,this.mazeSize)
+    const cells=newMaze2(this.mazeSize,this.mazeSize)
     this.grid=[]
     for(var h=0;h<cells.length;h++)
     {
@@ -261,4 +261,74 @@ function newMaze(x, y)
     }
   }
   return cells;
+}
+
+function newMaze2(x, y) 
+{
+  var cells = new Array();
+
+  //Make outer walls
+  for (var i = 0; i < y; i++) 
+  {
+    cells[i] = new Array();
+    for (var j = 0; j < x; j++) 
+    {
+      cells[i][j] = [1,1,1,1];
+    }
+  }
+  for (var j = 0; j < x; j++) 
+  {
+    cells[0][j][0] = 0;
+    cells[y-1][j][2] = 0;
+  }
+  for (var i = 0; i < y; i++) 
+  {
+    cells[i][0][3] = 0;
+    cells[i][y-1][1] = 0;
+  }
+
+  //Divide and conquer algorithm
+  newMaze_r(cells,0,x,0,y,0);
+  return cells;
+}
+
+//Divides the maze by a horizontal or vertical wall
+//with one door and repeat for both halves
+//until room is 1 cell wide or tall
+function newMaze_r(cells, lo_x, hi_x, lo_y, hi_y,depth)
+{
+  if(hi_x-lo_x>1 && hi_y-lo_y>1)
+  {
+    const vertical=Math.round(Math.random());
+    if(vertical==1)
+    {
+      const wallPos=1+lo_x+Math.floor(Math.random()*(hi_x-lo_x-1));
+      const doorPos=1+lo_y+Math.floor(Math.random()*(hi_y-lo_y-1));
+      for (var i = lo_y; i < hi_y; i++)
+      {
+        if(i!=doorPos)
+        {
+          cells[i][wallPos][3] = 0;
+          cells[i][wallPos-1][1] = 0;
+        }
+      }
+      newMaze_r(cells,lo_x,wallPos,lo_y,hi_y,depth+1);
+      newMaze_r(cells,wallPos,hi_x,lo_y,hi_y,depth+1);
+    }
+    else
+    {
+      const wallPos=1+lo_y+Math.floor(Math.random()*(hi_y-lo_y-1)); 
+      const doorPos=1+lo_x+Math.floor(Math.random()*(hi_x-lo_x-1));
+      for (var j = lo_x; j < hi_x; j++)
+      {
+        if(j!=doorPos)
+        {
+          cells[wallPos][j][0] = 0;
+          cells[wallPos-1][j][2] = 0;
+        }
+      }
+      newMaze_r(cells,lo_x,hi_x,lo_y,wallPos,depth+1);
+      newMaze_r(cells,lo_x,hi_x,wallPos,hi_y,depth+1);
+    }
+  }
 }
