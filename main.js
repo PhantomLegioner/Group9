@@ -7,6 +7,12 @@ import {MovingObject} from './movableobject.js';
   var lost=false;
   var score=0;
 
+  //Sounds and background music
+  var AUDIO_CONTEXT;
+  //player can stop the sounds or the music if he wants
+  var sound = true; 
+  var music = true;
+
   //To manage collectables
   var allCollectables = [];
 
@@ -156,6 +162,29 @@ function initGame()
     animate();	
 }
 
+function playSounds(freq, duration=0.1){
+
+	if(AUDIO_CONTEXT==null){
+		AUDIO_CONTEXT = new (AudioContext || webkitAudioContext || window.webkitAudioContext)()
+	}
+
+	var osc=AUDIO_CONTEXT.createOscillator();
+	var gainNode=AUDIO_CONTEXT.createGain();
+	gainNode.gain.setValueAtTime(0,AUDIO_CONTEXT.currentTime);
+	gainNode.gain.linearRampToValueAtTime(1,AUDIO_CONTEXT.currentTime+0.07);
+	gainNode.gain.linearRampToValueAtTime(0,AUDIO_CONTEXT.currentTime+
+		duration);
+
+	osc.type="triangle";
+	osc.frequency.value=freq;
+	osc.start(AUDIO_CONTEXT.currentTime);
+	osc.stop(AUDIO_CONTEXT.currentTime+duration);
+	osc.connect(gainNode);
+
+	gainNode.connect(AUDIO_CONTEXT.destination);
+
+}
+
 
 //Create a collectable
 function createCollectables(size,scene)
@@ -185,6 +214,9 @@ function eatCollectables(posX, posY, scene){
       allCollectables[index].wasEaten = true;
       score += 1;
       console.log("Score : " + score);
+      if(sound){
+        playSounds(200);
+      }
       //Delete the collectable
       scene.remove(scene.children[indexChildren]);
       //Check if all collectables was eaten, if yes the player win
