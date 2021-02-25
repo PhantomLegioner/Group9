@@ -18,10 +18,18 @@ import {MovingObject} from './movableobject.js';
   //Maze is stored as a Grid object from grid.js
   var grid=[];
 
+  var renderer= null;
+
+
 //This gets called when index.html is loaded
 //First shows menu
 function main()
 {
+  renderer = new THREE.WebGLRenderer();
+  renderer.setSize( window.innerWidth, window.innerHeight);
+  var threejsContainer=document.getElementById("threejsContainer");
+  threejsContainer.appendChild(renderer.domElement);
+
 	showMenus();
 }
 
@@ -33,11 +41,6 @@ function initGame()
     //Create scene and camera
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera( 65, window.innerWidth / window.innerHeight, 0.1, 1000 );
-
-    //Get renderer and add to HTML
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    document.body.appendChild( renderer.domElement );
 
     ///CREATING OBJECTS TO BE ADDED TO THE SCENE
   
@@ -326,8 +329,10 @@ function showMenus()
 		{
       document.getElementById("title").innerHTML="3D PAC-MAN";
       document.getElementById("btnPlay").innerHTML="Play";
+
       ctx.beginPath();
 	    ctx.fillStyle="yellow";
+      ctx.lineWidth=10;
 	    ctx.arc(500, 400, 150, 0, Math.PI * 2);	
 	    ctx.stroke();
 	    ctx.fill();
@@ -344,8 +349,8 @@ var btnPlay = document.getElementById('btnPlay');
 btnPlay.addEventListener('click',startGame);
 function startGame() 
 {
-	let popup=document.getElementById("popup");
-  popup.style.display='none';
+	let menu=document.getElementById("menuContainer");
+  menu.style.display='none';
 	initGame();
 }
 

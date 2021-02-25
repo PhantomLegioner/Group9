@@ -306,7 +306,7 @@ function newMaze_r(cells, lo_x, hi_x, lo_y, hi_y,depth)
 
       const wallPos=1+lo_x+Math.floor(Math.random()*(hi_x-lo_x-1));
       //var numberDoors=Math.max(1, Math.floor(Math.random()*(hi_y-lo_y)/2));
-      var numberDoors=3;
+      var numberDoors=1+Math.floor((hi_y-lo_y)/2);
       var doorPos=[];
       for(var i=0; i<numberDoors; i++)
       {
@@ -328,8 +328,8 @@ function newMaze_r(cells, lo_x, hi_x, lo_y, hi_y,depth)
     {
       const wallPos=1+lo_y+Math.floor(Math.random()*(hi_y-lo_y-1)); 
       //const doorPos=1+lo_x+Math.floor(Math.random()*(hi_x-lo_x-1));
-      //var numberDoors=Math.max(1, Math.floor(Math.random()*(hi_y-lo_y)/2));
-      var numberDoors=3;
+      var numberDoors=1+Math.floor((hi_x-lo_x)/2);
+      //var numberDoors=3;
       var doorPos=[];
       for(var i=0; i<numberDoors; i++)
       {

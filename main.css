@@ -1,18 +1,39 @@
 ﻿button{
-  background-color: lightblue;
-  padding: 1em 2em;
-  cursor: pointer;
-  position: absolute;
-	top: 80%;
-	left: 50%;
-	transform: translate(-50%,-50%);
-}
+	background-color: lightblue;
+	padding: 1em 2em;
+	cursor: pointer;
+	position: absolute;
+	  top: 80%;
+	  left: 50%;
+	  transform: translate(-50%,-50%);
+	width: 30vmin;
+	height: 10vmin;
+	font-size: 32px;
+	vertical-align: middle;
+  }
+  
+  button:hover{
+	background-color: rgb(192, 192, 192);}
+  
+  #mainDiv{
+	  /*
+	  background: rgba(0,0,0,0);
+	  position: absolute;
+	  top: 50%;
+	  left: 50%;
+	  transform: translate(-50%,-50%);
+	  width: 70vmin;
+	  height: 70vmin;
+	  padding: 1vmin;
+	  margin: 0px;
+	  color: white;
+	  border-radius: 2vmin;
+	  */
+  }
 
-button:hover{
-  background-color: rgb(192, 192, 192);}
-
-.popup{
-	background: rgba(0,0,0,0.7);
+  /*
+  #menuContainer{
+	background-color: rgba(255,255,255,1);
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -21,18 +42,38 @@ button:hover{
 	height: 70vmin;
 	padding: 1vmin;
 	margin: 0px;
-	color: white;
 	border-radius: 2vmin;
 }
+*/
 
-h2{
-  text-align: center;
-}
-canvas{
+  #threejsContainer{
+	background: rgba(0,0,0,0);
+	z-index: 10;
+  }
+
+  #menuContainer{
+	background: rgba(255,255,255,1);
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%,-50%);
-	width: 50vmin;
-	height: 50vmin;
-}
+	width: 70vmin;
+	height: 70vmin;
+	padding: 1vmin;
+	margin: 0px;
+	border-radius: 2vmin;
+	z-index: 8;
+  }
+  
+  h2{
+	font-size: 42px;
+	text-align: center;
+  }
+  canvas{
+	  position: absolute;
+	  top: 50%;
+	  left: 50%;
+	  transform: translate(-50%,-50%);
+	  width: 50vmin;
+	  height: 50vmin;
+  }
