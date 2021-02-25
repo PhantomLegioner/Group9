@@ -297,16 +297,25 @@ function newMaze2(x, y)
 //until room is 1 cell wide or tall
 function newMaze_r(cells, lo_x, hi_x, lo_y, hi_y,depth)
 {
-  if(hi_x-lo_x>1 && hi_y-lo_y>1)
+  if(hi_x-lo_x>1 && hi_y-lo_y>1 && hi_x-lo_x+hi_y-lo_y>2)
   {
-    const vertical=Math.round(Math.random());
-    if(vertical==1)
+    //const vertical=Math.round(Math.random());
+    const vertical=(hi_x-lo_x>hi_y-lo_y);
+    if(vertical==true)
     {
+
       const wallPos=1+lo_x+Math.floor(Math.random()*(hi_x-lo_x-1));
-      const doorPos=1+lo_y+Math.floor(Math.random()*(hi_y-lo_y-1));
+      //var numberDoors=Math.max(1, Math.floor(Math.random()*(hi_y-lo_y)/2));
+      var numberDoors=3;
+      var doorPos=[];
+      for(var i=0; i<numberDoors; i++)
+      {
+        doorPos.push(1+lo_y+Math.floor(Math.random()*(hi_y-lo_y-1)));
+      }
+      //const doorPos=1+lo_y+Math.floor(Math.random()*(hi_y-lo_y-1));
       for (var i = lo_y; i < hi_y; i++)
       {
-        if(i!=doorPos)
+        if(!doorPos.includes(i))
         {
           cells[i][wallPos][3] = 0;
           cells[i][wallPos-1][1] = 0;
@@ -318,10 +327,18 @@ function newMaze_r(cells, lo_x, hi_x, lo_y, hi_y,depth)
     else
     {
       const wallPos=1+lo_y+Math.floor(Math.random()*(hi_y-lo_y-1)); 
-      const doorPos=1+lo_x+Math.floor(Math.random()*(hi_x-lo_x-1));
+      //const doorPos=1+lo_x+Math.floor(Math.random()*(hi_x-lo_x-1));
+      //var numberDoors=Math.max(1, Math.floor(Math.random()*(hi_y-lo_y)/2));
+      var numberDoors=3;
+      var doorPos=[];
+      for(var i=0; i<numberDoors; i++)
+      {
+        doorPos.push(1+lo_x+Math.floor(Math.random()*(hi_x-lo_x-1)));
+      }
+      //const doorPos=1+lo_y+Math.floor(Math.random()*(hi_y-lo_y-1));
       for (var j = lo_x; j < hi_x; j++)
       {
-        if(j!=doorPos)
+        if(!doorPos.includes(j))
         {
           cells[wallPos][j][0] = 0;
           cells[wallPos-1][j][2] = 0;
