@@ -3,22 +3,22 @@ import {MovingObject} from './movableobject.js';
 
 //GLOBAL VARIABLES
 
-	//For the menus
-  var lost=false;
+	//For the menus and game logic
+  var state="menu";
   var score=0;
-
-  //To manage collectables
-  var allCollectables = [];
 
   //Game objects
   var pacman=null;
   var movingObjects=[];
   var ghosts=[]
+  var allCollectables=[];
   
   //Maze is stored as a Grid object from grid.js
-  var grid=[];
+  var grid=null;
 
-  var renderer= null;
+  //Three.js variables
+  var renderer = null;
+  var scene = null;
 
 
 //This gets called when index.html is loaded
@@ -29,7 +29,6 @@ function main()
   renderer.setSize( window.innerWidth, window.innerHeight);
   var threejsContainer=document.getElementById("threejsContainer");
   threejsContainer.appendChild(renderer.domElement);
-
 	showMenus();
 }
 
@@ -56,12 +55,11 @@ function initGame()
         const color = 0xFFFFFF;
         const intensity = 1;
         const light = new THREE.DirectionalLight(color, intensity);
-        light.position.set(0, 0, 5);
+        light.position.set(0, 0, 1);
         light.target.position.set(0, 0, -1);
         scene.add(light);
         scene.add(light.target);
     }
-
 
     //Create pacman (see the function createPacman() below)
     var pacmanModel=createPacman(grid.cubeSize/2,scene);
@@ -111,13 +109,14 @@ function initGame()
   
     //Place camera in front of box
     camera.position.z = 5;
-		camera.rotation.x += 0.5;
+		camera.rotation.x += 0.2;
 	
     //Create collectables
-    for(var i = 0; i<grid.height; i++){
-      for (var j = 0; j<grid.width; j++){
+    for(var i = 0; i<grid.height; i++)
+    {
+      for (var j = 0; j<grid.width; j++)
+      {
         var collectables=createCollectables(grid.cubeSize/2,scene);
-
         var pos2=grid.getTilePosition(i,j);
         collectables.position.x=pos2[0];
         collectables.position.y=pos2[1];
@@ -129,68 +128,112 @@ function initGame()
     setupControls()
 
     //ANIMATE AND RUN GAME
-  
+    state="play";
+    score=0;
+
     //Render scene repeatedly
     const animate = function () 
     {
-      requestAnimationFrame(animate);
-			
-      for(var i = 0; i<movingObjects.length; i++)
+      if(state=="play")
       {
-        movingObjects[i].update();
-      }
-    
-      //Move camera to pacman
-      camera.position.x=pacman.position.x;
-      camera.position.y=pacman.position.y-2;
+        requestAnimationFrame(animate);
 
-      eatCollectables(pacman.pos_x, pacman.pos_y, scene);
-    
-      //Render scene
-      renderer.render( scene, camera );
+        //Update moving objects
+        for(var i = 0; i<movingObjects.length; i++)
+        {
+          movingObjects[i].update();
+        }
+
+        //Move camera to pacman
+        camera.position.x=pacman.position.x;
+        camera.position.y=pacman.position.y-1;
+  
+        //See if a ghost touches pacman
+        for(var i = 0; i<ghosts.length; i++)
+        {
+          var ghost=ghosts[i];
+          var dist=Math.sqrt(Math.pow(ghost.model.position.x-pacman.model.position.x,2)+
+            Math.pow(ghost.model.position.y-pacman.model.position.y,2));
+          if(dist<grid.cubeSize/2)
+          {
+            state="lost";
+            showMenus();
+          }
+        }
+        
+        //Eat collectables and see if all are collected
+        eatCollectables(pacman.pos_x, pacman.pos_y, scene);
+        if(score == 100)
+        {
+          state="won";
+          showMenus();
+        }
+
+        //Render scene
+        renderer.render( scene, camera );
+      }
     };
 
-		//showMenus();
-	
     //Call animate
     animate();	
 }
 
-
-//Create a collectable
-function createCollectables(size,scene)
+//Clear game to restart
+function destroyGame()
 {
-    //Get a cylinder mesh
-    const geometry = new THREE.SphereGeometry(size/5, 32, 32);
-  
-    //Get a yellow solid material
-    const material = new THREE.MeshPhongMaterial({color: 0xFFFF00, side: THREE.DoubleSide,});
-  
-    //Make a yellow cylinder
-    const cylinder = new THREE.Mesh(geometry, material);
-  
-    //Rotate and place at the right height
-    cylinder.position.z=size/4;
-    cylinder.rotation.x=Math.PI/2;
-  
-    //Add to scene
-    scene.add(cylinder);
-    return cylinder;
+  while(movingObjects.length > 0) {
+    movingObjects.pop();
+  }
+  while(allCollectables.length > 0) {
+    allCollectables.pop();
+  }
+  while(ghosts.length > 0) {
+    ghosts.pop();
+    console.log(ghosts.length)
+  }
+  pacman=null;
+  grid=null;
+  if(scene!=null)
+  {
+    clearThree(scene);
+    scene=null;
+  }
 }
 
-function eatCollectables(posX, posY, scene){
+//FROM: https://stackoverflow.com/questions/30359830/how-do-i-clear-three-js-scene
+//Clears a scene of geometries and materials
+function clearThree(obj)
+{
+  while(obj.children.length > 0)
+  { 
+    clearThree(obj.children[0]);
+    obj.remove(obj.children[0]);
+  }
+  if(obj.geometry) obj.geometry.dispose()
+  if(obj.material)
+  { 
+    //in case of map, bumpMap, normalMap, envMap ...
+    Object.keys(obj.material).forEach(prop => {
+      if(!obj.material[prop])
+        return         
+      if(obj.material[prop] !== null && typeof obj.material[prop].dispose === 'function')                                  
+        obj.material[prop].dispose()                                                        
+    })
+    obj.material.dispose()
+  }
+}   
+
+//Makes pacman eat collectables that it touches
+function eatCollectables(posX, posY, scene)
+{
   var index = allCollectables.findIndex(x => x.positionX === posX && x.positionY === posY);
   var indexChildren = scene.children.findIndex(x => x.id === allCollectables[index].childrenNumber);
-  if(!allCollectables[index].wasEaten){
-      allCollectables[index].wasEaten = true;
-      score += 1;
-      console.log("Score : " + score);
+  if(!allCollectables[index].wasEaten)
+  {
       //Delete the collectable
+      allCollectables[index].wasEaten = true;
       scene.remove(scene.children[indexChildren]);
-      //Check if all collectables was eaten, if yes the player win
-      if(score == 100){
-        console.log("Won");
-      }
+      score+=1;
   }
 }
 
@@ -203,14 +246,15 @@ function Collectable(wasEaten, positionX, positionY, childrenNumber){
   this.childrenNumber = childrenNumber;
 }
 
-//PACMAN MODEL
+//MODELS
 
 //This creates the model for pacman
 //You can design pacman here
 function createPacman(size,scene)
 {
     //Get a cylinder mesh
-    const geometry = new THREE.CylinderGeometry(size/2, size/2, size/2, 32);
+    //const geometry = new THREE.CylinderGeometry(size/2, size/2, size/2, 32);
+    const geometry =  new THREE.SphereGeometry(size/2, 32, 32);
   
     //Get a yellow solid material
     const material = new THREE.MeshPhongMaterial({color: 0xFFFF00, side: THREE.DoubleSide,});
@@ -235,6 +279,27 @@ function createGhost(size,scene)
   
     //Get a yellow solid material
     const material = new THREE.MeshPhongMaterial({color: 0xFF00FF, side: THREE.DoubleSide,});
+  
+    //Make a yellow cylinder
+    const cylinder = new THREE.Mesh(geometry, material);
+  
+    //Rotate and place at the right height
+    cylinder.position.z=size/4;
+    cylinder.rotation.x=Math.PI/2;
+  
+    //Add to scene
+    scene.add(cylinder);
+    return cylinder;
+}
+
+//Create a collectable
+function createCollectables(size,scene)
+{
+    //Get a cylinder mesh
+    const geometry = new THREE.SphereGeometry(size/5, 32, 32);
+  
+    //Get a yellow solid material
+    const material = new THREE.MeshPhongMaterial({color: 0xFFFF00, side: THREE.DoubleSide,});
   
     //Make a yellow cylinder
     const cylinder = new THREE.Mesh(geometry, material);
@@ -282,14 +347,15 @@ function setupControls()
         {
           pacman.queueDirection("right");
         }
+
+        //THIS IS JUST FOR DEBUGGING
+        //YOU CAN ADD WHATEVER INFORMATION YOU WANT TO DISPLAY
+        //FOR TESTING
         if(state.keys.t)
         {
-          const dirs=["up","down","right","left"];
-          for(var i=0;i<4;i++)
-          {
-            var dir=dirs[i];
-            console.log(dir+": "+pacman.canMove(dir))
-          }
+          console.log(pacman.model.position.x+", "+pacman.model.position.y);
+          console.log("Ghosts: "+ghosts.length);
+          console.log(ghosts[0].model.position.x+", "+ghosts[0].model.position.y);
         }
     };
 
@@ -323,9 +389,12 @@ function showMenus()
     let ctx=canvas.getContext("2d");
     canvas.width=SIZE;
 	  canvas.height=SIZE; 
+
+    let menu=document.getElementById("menuContainer");
+    menu.style.display='';
   
     //To show the start menu or the lost menu
-    if(!lost)
+    if(state=="menu")
 		{
       document.getElementById("title").innerHTML="3D PAC-MAN";
       document.getElementById("btnPlay").innerHTML="Play";
@@ -337,21 +406,30 @@ function showMenus()
 	    ctx.stroke();
 	    ctx.fill();
     } 
-		else 
+		else if(state=="lost")
 		{
       document.getElementById("title").innerHTML="Lost !";
       document.getElementById("btnPlay").innerHTML="Replay";
       document.getElementById("score").innerHTML="Your score : " + score ;      
     }
+    else if(state=="won")
+		{
+      document.getElementById("title").innerHTML="Won !";
+      document.getElementById("btnPlay").innerHTML="Replay";
+      document.getElementById("score").innerHTML="Your score : " + score ;      
+    }
 }
 
+//Setup play/replay button
 var btnPlay = document.getElementById('btnPlay');
 btnPlay.addEventListener('click',startGame);
 function startGame() 
 {
-	let menu=document.getElementById("menuContainer");
-  menu.style.display='none';
+  //Destroy previous game and initialize new
+  destroyGame();
 	initGame();
+  let menu=document.getElementById("menuContainer");
+  menu.style.display='none';
 }
 
 //Call main() when index.html is loaded
