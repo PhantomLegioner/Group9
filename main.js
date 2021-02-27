@@ -7,6 +7,13 @@ import {MovingObject} from './movableobject.js';
   var state="menu";
   var score=0;
 
+  //Sounds and background music
+  var AUDIO_CONTEXT;
+
+  //player can stop the sounds or the music if he wants
+  var sound = true; 
+  var music = true;
+
   //Game objects
   var pacman=null;
   var movingObjects=[];
@@ -178,6 +185,32 @@ function initGame()
     animate();	
 }
 
+//AUDIO
+function playSounds(freq, duration=0.1){
+
+	if(AUDIO_CONTEXT==null){
+		AUDIO_CONTEXT = new (AudioContext || webkitAudioContext || window.webkitAudioContext)()
+	}
+
+	var osc=AUDIO_CONTEXT.createOscillator();
+	var gainNode=AUDIO_CONTEXT.createGain();
+	gainNode.gain.setValueAtTime(0,AUDIO_CONTEXT.currentTime);
+	gainNode.gain.linearRampToValueAtTime(1,AUDIO_CONTEXT.currentTime+0.07);
+	gainNode.gain.linearRampToValueAtTime(0,AUDIO_CONTEXT.currentTime+
+		duration);
+
+	osc.type="triangle";
+	osc.frequency.value=freq;
+	osc.start(AUDIO_CONTEXT.currentTime);
+	osc.stop(AUDIO_CONTEXT.currentTime+duration);
+	osc.connect(gainNode);
+
+	gainNode.connect(AUDIO_CONTEXT.destination);
+
+}
+
+
+
 //Clear game to restart
 function destroyGame()
 {
@@ -199,6 +232,7 @@ function destroyGame()
     scene=null;
   }
 }
+
 
 //FROM: https://stackoverflow.com/questions/30359830/how-do-i-clear-three-js-scene
 //Clears a scene of geometries and materials
@@ -230,15 +264,20 @@ function eatCollectables(posX, posY, scene)
   var indexChildren = scene.children.findIndex(x => x.id === allCollectables[index].childrenNumber);
   if(!allCollectables[index].wasEaten)
   {
+      allCollectables[index].wasEaten = true;
+      score += 1;
+      if(sound){
+        playSounds(200);
+      }
       //Delete the collectable
       allCollectables[index].wasEaten = true;
       scene.remove(scene.children[indexChildren]);
-      score+=1;
   }
 }
 
 //Objects to push in allCollectables list and to manage collectables
-function Collectable(wasEaten, positionX, positionY, childrenNumber){
+function Collectable(wasEaten, positionX, positionY, childrenNumber)
+{
   this.wasEaten = wasEaten;
   this.positionX = positionX;
   this.positionY = positionY;
