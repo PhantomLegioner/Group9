@@ -89,10 +89,6 @@ function initGame()
     //Add pacman to collection of moving objects
     movingObjects.push(pacman);
 
-    //Create ghost 
-    var ghostModel=createGhost(grid.cubeSize/2,scene);
-    var ghost=new MovingObject(ghostModel,grid,5,5,0.05);
-
     //This function defines how the ghost "AI" works
     const ghostCallback=function(obj, event)
     {
@@ -121,10 +117,39 @@ function initGame()
         }
       }
     }
+
+    //Create 4 ghosts
+    //Perhaps eventually different ghost have different AI
+
+    //Create ghost 
+    var ghostModel=createGhost(grid.cubeSize/2,scene);
+    var ghost=new MovingObject(ghostModel,grid,5,5,0.05);
     ghost.registerCallback(ghostCallback);
     ghostCallback(ghost,null);
+    movingObjects.push(ghost);
+    ghosts.push(ghost);
 
-    //Add ghost to moving objects and the collection of ghosts
+    //Create ghost 2
+    ghostModel=createGhost(grid.cubeSize/2,scene);
+    ghost=new MovingObject(ghostModel,grid,9,5,0.05);
+    ghost.registerCallback(ghostCallback);
+    ghostCallback(ghost,null);
+    movingObjects.push(ghost);
+    ghosts.push(ghost);
+
+    //Create ghost 3
+    ghostModel=createGhost(grid.cubeSize/2,scene);
+    ghost=new MovingObject(ghostModel,grid,5,9,0.05);
+    ghost.registerCallback(ghostCallback);
+    ghostCallback(ghost,null);
+    movingObjects.push(ghost);
+    ghosts.push(ghost);
+
+    //Create ghost 4
+    ghostModel=createGhost(grid.cubeSize/2,scene);
+    ghost=new MovingObject(ghostModel,grid,9,9,0.05);
+    ghost.registerCallback(ghostCallback);
+    ghostCallback(ghost,null);
     movingObjects.push(ghost);
     ghosts.push(ghost);
   
