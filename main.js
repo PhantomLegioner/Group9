@@ -59,8 +59,17 @@ function initGame()
     ///INITIALIZING THREE.JS SCENE AND CAMERA
 
     //Create scene and camera
+    const loader = new THREE.TextureLoader();
+    //Volcano Background
+    const bgTexture = loader.load('images/Volcano_eruption.jpg');
+    //Ice Background
+    const bgTexture2 = loader.load('images/Ice.jpg');
+    //Space Background
+    const bgTexture3 = loader.load('images/Space.jpg');
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera( 65, window.innerWidth/ window.innerHeight, 0.1, 1000 );
+    scene.background = bgTexture;
+    camera = new THREE.PerspectiveCamera( 120, window.innerWidth/ window.innerHeight, 0.1, 1000 );
+    //65, window.innerWidth/ window.innerHeight, 0.1, 1000, Original
 
     ///CREATING OBJECTS TO BE ADDED TO THE SCENE
   
