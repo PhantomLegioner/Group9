@@ -26,6 +26,7 @@ import {MovingObject} from './movableobject.js';
   //Three.js variables
   var renderer = null;
   var scene = null;
+	var camera = null;
 
 
 //This gets called when index.html is loaded
@@ -36,7 +37,20 @@ function main()
   renderer.setSize( window.innerWidth, window.innerHeight);
   var threejsContainer=document.getElementById("threejsContainer");
   threejsContainer.appendChild(renderer.domElement);
+	document.body.onresize=updateRenderer;
 	showMenus();
+}
+
+//If window is rescaled, this event corrects the renderer and camera
+function updateRenderer()
+{
+	renderer.setSize( window.innerWidth, window.innerHeight);
+	if(camera!=null)
+	{
+		camera.aspect=window.innerWidth/ window.innerHeight;
+		camera.updateProjectionMatrix();
+	}
+	console.log("test");
 }
 
 //Starts the game
@@ -45,8 +59,8 @@ function initGame()
     ///INITIALIZING THREE.JS SCENE AND CAMERA
 
     //Create scene and camera
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera( 65, window.innerWidth / window.innerHeight, 0.1, 1000 );
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera( 65, window.innerWidth/ window.innerHeight, 0.1, 1000 );
 
     ///CREATING OBJECTS TO BE ADDED TO THE SCENE
   
@@ -224,6 +238,7 @@ function destroyGame()
     ghosts.pop();
     console.log(ghosts.length)
   }
+	camera=null;
   pacman=null;
   grid=null;
   if(scene!=null)
