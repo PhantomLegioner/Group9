@@ -1,6 +1,6 @@
 export class Grid
 {
-  constructor(height, width, x0, y0, size) 
+  constructor(height, width, x0, y0, size, texture) 
   { 
     //Initialize parameters
 		this.width=width;
@@ -12,7 +12,15 @@ export class Grid
     this.wallHeight=0.5;
     {
         const planeGeo = new THREE.PlaneBufferGeometry(this.planeSize, this.planeSize);
-        const planeMat = new THREE.MeshPhongMaterial({color: 0x444444, side: THREE.DoubleSide,});
+        var planeMat=null;
+        if(texture!=null)
+        {
+          planeMat = new THREE.MeshPhongMaterial({map: texture, color: 0x444444, side: THREE.DoubleSide,});
+        }
+        else
+        {
+          planeMat = new THREE.MeshPhongMaterial({color: 0x444444, side: THREE.DoubleSide,});
+        }
         this.plane = new THREE.Mesh(planeGeo, planeMat);
     }
     

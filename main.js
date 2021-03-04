@@ -25,6 +25,8 @@ import {MovingObject} from './movableobject.js';
 
   //Three.js variables
   var renderer = null;
+  var loader = null;
+  var bgTextures=[];
   var scene = null;
 	var camera = null;
 
@@ -35,6 +37,16 @@ function main()
 {
   renderer = new THREE.WebGLRenderer();
   renderer.setSize( window.innerWidth, window.innerHeight);
+
+  loader = new THREE.TextureLoader();
+
+  //Volcano Background
+  bgTextures.push(loader.load('images/Volcano_eruption.jpg'));
+  //Ice Background
+  bgTextures.push(loader.load('images/Ice.jpg'));
+  //Space Background
+  bgTextures.push(loader.load('images/Space.jpg'));
+
   var threejsContainer=document.getElementById("threejsContainer");
   threejsContainer.appendChild(renderer.domElement);
 	document.body.onresize=updateRenderer;
@@ -57,24 +69,18 @@ function updateRenderer()
 function initGame()
 {
     ///INITIALIZING THREE.JS SCENE AND CAMERA
-
     //Create scene and camera
-    const loader = new THREE.TextureLoader();
-    //Volcano Background
-    const bgTexture = loader.load('images/Volcano_eruption.jpg');
-    //Ice Background
-    const bgTexture2 = loader.load('images/Ice.jpg');
-    //Space Background
-    const bgTexture3 = loader.load('images/Space.jpg');
     scene = new THREE.Scene();
-    scene.background = bgTexture;
-    camera = new THREE.PerspectiveCamera( 120, window.innerWidth/ window.innerHeight, 0.1, 1000 );
+    scene.background = bgTextures[1];
+    camera = new THREE.PerspectiveCamera( 100, window.innerWidth/ window.innerHeight, 0.1, 1000 );
     //65, window.innerWidth/ window.innerHeight, 0.1, 1000, Original
 
     ///CREATING OBJECTS TO BE ADDED TO THE SCENE
   
     //Create the maze with Grid-class from grid.js
-    grid=new Grid(10,10,0,0,10)
+    //You can now apply a texture on the grid floor
+    //for now the texture is null
+    grid=new Grid(10,10,0,0,10,null)
     scene.add(grid.plane)
     for(var i=0;i<grid.walls.length;i++){
         scene.add(grid.walls[i]);
