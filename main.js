@@ -9,6 +9,8 @@ import {MovingObject} from './movableobject.js';
 
   //Sounds and background music
   var AUDIO_CONTEXT;
+  var audioEat = new Audio('https://lasonotheque.org/UPLOAD/mp3/0945.mp3');
+  var audioClash = new Audio('https://lasonotheque.org/UPLOAD/mp3/2284.mp3');
 
   //player can stop the sounds or the music if he wants
   var sound = true; 
@@ -217,6 +219,9 @@ function initGame()
             Math.pow(ghost.model.position.y-pacman.model.position.y,2));
           if(dist<grid.cubeSize/2)
           {
+            if(sound){
+              audioClash.play();
+            }
             state="lost";
             showMenus();
           }
@@ -238,32 +243,6 @@ function initGame()
     //Call animate
     animate();	
 }
-
-//AUDIO
-function playSounds(freq, duration=0.1){
-
-	if(AUDIO_CONTEXT==null){
-		AUDIO_CONTEXT = new (AudioContext || webkitAudioContext || window.webkitAudioContext)()
-	}
-
-	var osc=AUDIO_CONTEXT.createOscillator();
-	var gainNode=AUDIO_CONTEXT.createGain();
-	gainNode.gain.setValueAtTime(0,AUDIO_CONTEXT.currentTime);
-	gainNode.gain.linearRampToValueAtTime(1,AUDIO_CONTEXT.currentTime+0.07);
-	gainNode.gain.linearRampToValueAtTime(0,AUDIO_CONTEXT.currentTime+
-		duration);
-
-	osc.type="triangle";
-	osc.frequency.value=freq;
-	osc.start(AUDIO_CONTEXT.currentTime);
-	osc.stop(AUDIO_CONTEXT.currentTime+duration);
-	osc.connect(gainNode);
-
-	gainNode.connect(AUDIO_CONTEXT.destination);
-
-}
-
-
 
 //Clear game to restart
 function destroyGame()
@@ -322,7 +301,7 @@ function eatCollectables(posX, posY, scene)
       allCollectables[index].wasEaten = true;
       score += 1;
       if(sound){
-        playSounds(200);
+        audioEat.play();
       }
       //Delete the collectable
       allCollectables[index].wasEaten = true;
