@@ -220,7 +220,7 @@ function initGame()
           if(dist<grid.cubeSize/2)
           {
             if(sound){
-              audioClash.play();
+              playSound(audioClash);
             }
             state="lost";
             showMenus();
@@ -242,6 +242,14 @@ function initGame()
 
     //Call animate
     animate();	
+}
+
+//Clones sound from an Audio object
+//and plays the sound
+function playSound(sound)
+{
+  var newSound=sound.cloneNode();
+  newSound.play()
 }
 
 //Clear game to restart
@@ -301,7 +309,7 @@ function eatCollectables(posX, posY, scene)
       allCollectables[index].wasEaten = true;
       score += 1;
       if(sound){
-        audioEat.play();
+        playSound(audioEat);
       }
       //Delete the collectable
       allCollectables[index].wasEaten = true;
