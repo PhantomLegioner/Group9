@@ -11,6 +11,9 @@ import {MovingObject} from './movableobject.js';
   var AUDIO_CONTEXT;
   var audioEat = new Audio('https://lasonotheque.org/UPLOAD/mp3/0945.mp3');
   var audioClash = new Audio('https://lasonotheque.org/UPLOAD/mp3/2284.mp3');
+  var audioWon = document.createElement("audio");
+  audioWon.src = "sounds/Won.mp3";
+  var backgroundMusic = document.getElementById("backgroundMusic");
 
   //player can stop the sounds or the music if he wants
   var sound = true; 
@@ -70,6 +73,7 @@ function updateRenderer()
 //Starts the game
 function initGame()
 {
+    playSound(backgroundMusic);
     ///INITIALIZING THREE.JS SCENE AND CAMERA
     //Create scene and camera
     scene = new THREE.Scene();
@@ -197,6 +201,7 @@ function initGame()
     //Render scene repeatedly
     const animate = function () 
     {
+      uploadCurrentScore(score);
       if(state=="play")
       {
         requestAnimationFrame(animate);
@@ -222,6 +227,7 @@ function initGame()
             if(sound){
               playSound(audioClash);
             }
+            stopMusic();
             state="lost";
             showMenus();
           }
@@ -231,6 +237,8 @@ function initGame()
         eatCollectables(pacman.pos_x, pacman.pos_y, scene);
         if(score == 100)
         {
+          stopMusic();
+          playSound(audioWon);
           state="won";
           showMenus();
         }
@@ -239,7 +247,7 @@ function initGame()
         renderer.render( scene, camera );
       }
     };
-
+    
     //Call animate
     animate();	
 }
@@ -248,8 +256,16 @@ function initGame()
 //and plays the sound
 function playSound(sound)
 {
-  var newSound=sound.cloneNode();
-  newSound.play()
+  if(sound == backgroundMusic){
+    backgroundMusic.play();
+  } else {
+    var newSound=sound.cloneNode();
+    newSound.play()
+  }
+}
+
+function stopMusic(){
+  backgroundMusic.pause();
 }
 
 //Clear game to restart
@@ -460,6 +476,12 @@ function setupControls()
     window.addEventListener('keyup', keyHandler);   
 }
 
+//To show the current score in the left window
+function uploadCurrentScore(currentScore){
+  console.log(currentScore);
+  document.getElementById("currentScore").innerHTML="Score : " + currentScore;
+}
+
 //MENUS
 function showMenus()
 {
@@ -499,6 +521,32 @@ function showMenus()
       document.getElementById("btnPlay").innerHTML="Replay";
       document.getElementById("score").innerHTML="Your score : " + score ;      
     }
+}
+
+var soundEffectIcon = document.getElementById('soundEffectIcon');
+soundEffectIcon.addEventListener('click', controlSounds);
+function controlSounds(){
+  if(sound){
+    sound = false;
+    document.getElementById("soundEffectIcon").innerHTML="Play sounds effects";
+  } else {
+    sound = true;
+    document.getElementById("soundEffectIcon").innerHTML="Stop sounds effects";
+  }
+}
+
+var backgroundMusicIcon = document.getElementById('backgroundMusicIcon');
+backgroundMusicIcon.addEventListener('click', controlMusic);
+function controlMusic(){
+  if(music){
+    music = false;
+    stopMusic();
+    document.getElementById("backgroundMusicIcon").innerHTML="Play background music";
+  } else {
+    music = true;
+    playSound(backgroundMusic);
+    document.getElementById("backgroundMusicIcon").innerHTML="Stop background music";
+  }
 }
 
 //Setup play/replay button

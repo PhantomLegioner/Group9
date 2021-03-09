@@ -7,14 +7,22 @@
         <script type="module" src="grid.js"></script>
         <script type="module" src="movableobject.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r124/three.js" integrity="sha512-tmdOKTY7I6MOUcCL/9fa4s+BnBCgEuifJImOX46m36+rxVMcgHEPGLVoCXHR6ZvjcKGoVixEiBKE4LcYLnv0Cw==" crossorigin="anonymous"></script>
-	</head>
+      </head>
   <body>
+    <audio controls loop id="backgroundMusic">
+      <source src="sounds/BackgroundMusic.mp3" type="audio/mpeg">
+    </audio>
     <div id="mainContainer">
       <div id="menuContainer">
           <canvas id="myCanvas"></canvas>
           <button id="btnPlay"></button>
           <h2 id="title"></h2>
           <h3 id="score"></h3>
+      </div>
+      <div id="currentParamContainer">
+        <h3 id="currentScore"></h3>
+        <button id="backgroundMusicIcon">Stop background music</button>
+        <button id="soundEffectIcon">Stop sounds effects</button>
       </div>
       <div id="threejsContainer"></div> 
     </div>
