@@ -118,7 +118,7 @@ function initGame()
     //This function defines how the ghost "AI" works
     const ghostCallback=function(obj, event)
     {
-      if((event==null && obj.dir=="none") || (event!=null && event.type=="new_tile"))
+      if((event==null && obj.dir=="none") || (event!=null))
       {
         var targetTileIndex=grid.encodeTile(pacman.pos_x,pacman.pos_y);
         var currentTileIndex=grid.encodeTile(obj.pos_x,obj.pos_y);
