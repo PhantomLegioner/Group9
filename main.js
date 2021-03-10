@@ -35,6 +35,49 @@ import {MovingObject} from './movableobject.js';
   var scene = null;
 	var camera = null;
 
+  //This function defines how the ghost "AI" works
+  const ghostCallback=function(obj, event)
+  {
+    if((event==null && obj.dir=="none") || (event!=null))
+    {
+      var targetTileIndex=grid.encodeTile(pacman.pos_x,pacman.pos_y);
+      var currentTileIndex=grid.encodeTile(obj.pos_x,obj.pos_y);
+      var path=grid.djikstraAlgorithm(obj.pos_x,obj.pos_y);
+      var w=pacman.pos_x;
+      var h=pacman.pos_y;
+      while(path[targetTileIndex]!=null)
+      {
+        var temp=grid.decodeTile(path[targetTileIndex]);
+        targetTileIndex=path[targetTileIndex];
+        if(currentTileIndex==targetTileIndex)
+        {
+          break;
+        }
+        w=temp[0];
+        h=temp[1];
+        console.log(w+", "+h);
+      }
+      console.log("Current: "+obj.pos_x+", "+obj.pos_y);
+      console.log("Next: "+w+", "+h);
+      if(h>obj.pos_y)
+      {
+        obj.queueDirection("up");
+      }
+      else if(h<obj.pos_y)
+      {
+        obj.queueDirection("down");
+      }
+      else if(w>obj.pos_x)
+      {
+        obj.queueDirection("right");
+      }
+      else if(w<obj.pos_x)
+      {
+        obj.queueDirection("left");
+      }
+    }
+  }
+
 
 //This gets called when index.html is loaded
 //First shows menu
@@ -114,50 +157,6 @@ function initGame()
 
     //Add pacman to collection of moving objects
     movingObjects.push(pacman);
-
-    //This function defines how the ghost "AI" works
-    const ghostCallback=function(obj, event)
-    {
-      if((event==null && obj.dir=="none") || (event!=null))
-      {
-        var targetTileIndex=grid.encodeTile(pacman.pos_x,pacman.pos_y);
-        var currentTileIndex=grid.encodeTile(obj.pos_x,obj.pos_y);
-        var path=grid.djikstraAlgorithm(obj.pos_x,obj.pos_y);
-        var w=0;
-        var h=0;
-
-        while(path[targetTileIndex]!=null)
-        {
-          var temp=grid.decodeTile(path[targetTileIndex]);
-          targetTileIndex=path[targetTileIndex];
-          if(currentTileIndex==targetTileIndex)
-          {
-            break;
-          }
-          w=temp[0];
-          h=temp[1];
-          console.log(w+", "+h);
-        }
-        console.log("Current: "+obj.pos_x+", "+obj.pos_y);
-        console.log("Next: "+w+", "+h);
-        if(h>obj.pos_y)
-        {
-          obj.queueDirection("up");
-        }
-        else if(h<obj.pos_y)
-        {
-          obj.queueDirection("down");
-        }
-        else if(w>obj.pos_x)
-        {
-          obj.queueDirection("right");
-        }
-        else if(w<obj.pos_x)
-        {
-          obj.queueDirection("left");
-        }
-      }
-    }
 
     //Create 4 ghosts
     //Perhaps eventually different ghost have different AI
@@ -242,6 +241,10 @@ function initGame()
         for(var i = 0; i<ghosts.length; i++)
         {
           var ghost=ghosts[i];
+          if(ghost.dir=="none")
+          {
+              ghostCallback(ghost,null);
+          }
           var dist=Math.sqrt(Math.pow(ghost.model.position.x-pacman.model.position.x,2)+
             Math.pow(ghost.model.position.y-pacman.model.position.y,2));
           if(dist<grid.cubeSize/2)
