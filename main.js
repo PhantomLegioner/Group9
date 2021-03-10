@@ -6,6 +6,7 @@ import {MovingObject} from './movableobject.js';
 	//For the menus and game logic
   var state="menu";
   var score=0;
+  var timer = 0;
 
   //Sounds and background music
   var AUDIO_CONTEXT;
@@ -36,6 +37,7 @@ import {MovingObject} from './movableobject.js';
   var wallTexture=null;
   var scene = null;
 	var camera = null;
+  var level = null;
 
 class GhostAI
 {
@@ -177,7 +179,7 @@ function initGame()
     ///INITIALIZING THREE.JS SCENE AND CAMERA
     //Create scene and camera
     scene = new THREE.Scene();
-    scene.background = bgTextures[1];
+    scene.background = bgTextures[level];
     camera = new THREE.PerspectiveCamera( 100, window.innerWidth/ window.innerHeight, 0.1, 1000 );
     //65, window.innerWidth/ window.innerHeight, 0.1, 1000, Original
 
@@ -587,9 +589,12 @@ function showMenus()
     //To show the start menu or the lost menu
     if(state=="menu")
 		{
+      document.getElementById("LevelHeader");
+      selectLevel();
       document.getElementById("title").innerHTML="3D PAC-MAN";
       document.getElementById("btnPlay").innerHTML="Play";
-
+      document.getElementById("btnSave").innerHTML="Highscores";
+      
       ctx.beginPath();
 	    ctx.fillStyle="yellow";
       ctx.lineWidth=10;
@@ -599,16 +604,50 @@ function showMenus()
     } 
 		else if(state=="lost")
 		{
+      document.getElementById("LevelHeader");
+      selectLevel();
       document.getElementById("title").innerHTML="Lost !";
       document.getElementById("btnPlay").innerHTML="Replay";
+      document.getElementById("btnSave").innerHTML="Save score";
       document.getElementById("score").innerHTML="Your score : " + score ;      
     }
     else if(state=="won")
 		{
+      document.getElementById("LevelHeader");
+      selectLevel();
       document.getElementById("title").innerHTML="Won !";
       document.getElementById("btnPlay").innerHTML="Replay";
+      document.getElementById("btnSave").innerHTML="Save score";
       document.getElementById("score").innerHTML="Your score : " + score ;      
     }
+}
+
+var levelChoice = document.getElementById("level");
+levelChoice.addEventListener('change', selectLevel)
+
+function selectLevel() {
+  var levelText = levelChoice.options[levelChoice.selectedIndex].text;
+
+if (levelText == "Fire")
+  {
+    level = 0;
+    console.log("Fire Level selected!")
+   
+  }
+if(levelText == "Ice")
+  {
+    level = 1;
+    console.log("Ice Level selected!")
+  }
+
+if(levelText == "Space")
+  {
+    level = 2;
+    console.log("Space Level selected!")
+  }
+console.log(level, " returned!");
+return level;
+
 }
 
 var soundEffectIcon = document.getElementById('soundEffectIcon');
@@ -655,6 +694,15 @@ function startGame()
 	initGame();
   let menu=document.getElementById("menuContainer");
   menu.style.display='none';
+}
+
+var btnSave = document.getElementById('btnSave');
+btnSave.addEventListener('click',saveStats);
+function saveStats() 
+{
+  //Destroy previous game and save information to database
+  destroyGame();
+	console.log("Stats saved.")
 }
 
 //Call main() when index.html is loaded

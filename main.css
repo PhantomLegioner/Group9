@@ -6,15 +6,37 @@
 	  top: 80%;
 	  left: 50%;
 	  transform: translate(-50%,-50%);
-	width: 30vmin;
-	height: 10vmin;
-	font-size: 32px;
+	width: 10vmin;
+	height: 5vmin;
+	font-size: 15px;
+	text-align: center;
 	vertical-align: middle;
   }
-  
-  button:hover{
-	background-color: rgb(192, 192, 192);}
-  
+
+#level{
+	position: absolute;
+	top: 80%;
+	right: 20%;
+	vertical-align: middle;
+	font-size: 15px;
+	text-align: center;
+}
+
+#btnSave{
+	background-color: lightblue;
+	padding: 1em 2em;
+	cursor: pointer;
+	position: absolute;
+	  top: 80%;
+	  left: 15%;
+	  transform: translate(-50%,-50%);
+	width: 10vmin;
+	height: 5vmin;
+	font-size: 15px;
+	text-align: center;
+	vertical-align: middle;
+}
+
   #mainDiv{
 	  /*
 	  background: rgba(0,0,0,0);
@@ -83,6 +105,20 @@
 	font-size: 42px;
 	text-align: center;
   }
+
+  header {
+	background: 0%;
+	position: absolute;
+	top: 70%;
+	right: 10%;
+
+  }
+  header.top {
+	font-size: 30px;
+	font-weight: bold;
+	
+}
+
   canvas{
 	  position: absolute;
 	  top: 50%;
