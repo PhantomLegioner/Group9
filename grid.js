@@ -1,6 +1,6 @@
 export class Grid
 {
-  constructor(height, width, x0, y0, size, texture) 
+  constructor(height, width, size, floorTexture, wallTexture) 
   { 
     //Initialize parameters
 		this.width=width;
@@ -15,9 +15,9 @@ export class Grid
     {
         const planeGeo = new THREE.PlaneBufferGeometry(this.planeSize, this.planeSize);
         var planeMat=null;
-        if(texture!=null)
+        if(floorTexture!=null)
         {
-          planeMat = new THREE.MeshPhongMaterial({map: texture, color: 0x444444, side: THREE.DoubleSide,});
+          planeMat = new THREE.MeshPhongMaterial({map: floorTexture, color: 0xAAAAAA, side: THREE.DoubleSide,});
         }
         else
         {
@@ -43,7 +43,7 @@ export class Grid
     }
     
     //Generate a 3D model of the maze
-    this.generateMazeMesh();
+    this.generateMazeMesh(wallTexture);
   }
   
   //Get real-world position of tile (w,h)
@@ -79,7 +79,7 @@ export class Grid
   }
   
   //This generates the actual 3D model of the maze
-  generateMazeMesh()
+  generateMazeMesh(wallTexture)
   {
     //Generate a grid of wall positions
     //grid[i][j][0]="boolean of is there an empty space 
@@ -92,7 +92,15 @@ export class Grid
       for(var j=0;j<this.grid[0].length;j++)
       {
         //Material is the same for all walls
-        const cubeMat = new THREE.MeshPhongMaterial( { color: 0x0000ff, vertexColors: true } );
+        var cubeMat=null;
+        if(wallTexture==null)
+        {
+          cubeMat = new THREE.MeshPhongMaterial( { color: 0x0000ff, vertexColors: true } );
+        }
+        else
+        {
+          cubeMat = new THREE.MeshPhongMaterial( {map: wallTexture, color: 0xffffff, vertexColors: true } );
+        }
       
         //Check if tile has bottom wall
         if(this.grid[i][j].bottom)
@@ -278,22 +286,19 @@ function newMaze(x, y)
 //This ensures all tiles are accessible.
 function newMaze_r(cells, lo_x, hi_x, lo_y, hi_y,depth)
 {
-  if(hi_x-lo_x>1 && hi_y-lo_y>1 && hi_x-lo_x+hi_y-lo_y>2)
+  if(hi_x-lo_x>1 && hi_y-lo_y>1 && hi_x-lo_x+hi_y-lo_y>4)
   {
-    //const vertical=Math.round(Math.random());
     const vertical=(hi_x-lo_x>hi_y-lo_y);
     if(vertical==true)
     {
 
       const wallPos=1+lo_x+Math.floor(Math.random()*(hi_x-lo_x-1));
-      //var numberDoors=Math.max(1, Math.floor(Math.random()*(hi_y-lo_y)/2));
       var numberDoors=1+Math.floor((hi_y-lo_y)/2);
       var doorPos=[];
       for(var i=0; i<numberDoors; i++)
       {
         doorPos.push(1+lo_y+Math.floor(Math.random()*(hi_y-lo_y-1)));
       }
-      //const doorPos=1+lo_y+Math.floor(Math.random()*(hi_y-lo_y-1));
       for (var i = lo_y; i < hi_y; i++)
       {
         if(!doorPos.includes(i))
@@ -308,15 +313,12 @@ function newMaze_r(cells, lo_x, hi_x, lo_y, hi_y,depth)
     else
     {
       const wallPos=1+lo_y+Math.floor(Math.random()*(hi_y-lo_y-1)); 
-      //const doorPos=1+lo_x+Math.floor(Math.random()*(hi_x-lo_x-1));
       var numberDoors=1+Math.floor((hi_x-lo_x)/2);
-      //var numberDoors=3;
       var doorPos=[];
       for(var i=0; i<numberDoors; i++)
       {
         doorPos.push(1+lo_x+Math.floor(Math.random()*(hi_x-lo_x-1)));
       }
-      //const doorPos=1+lo_y+Math.floor(Math.random()*(hi_y-lo_y-1));
       for (var j = lo_x; j < hi_x; j++)
       {
         if(!doorPos.includes(j))

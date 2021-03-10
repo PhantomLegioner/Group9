@@ -32,6 +32,8 @@ import {MovingObject} from './movableobject.js';
   var renderer = null;
   var loader = null;
   var bgTextures=[];
+  var floorTexture=null;
+  var wallTexture=null;
   var scene = null;
 	var camera = null;
 
@@ -137,6 +139,15 @@ function main()
   //Space Background
   bgTextures.push(loader.load('images/Space.jpg'));
 
+  //Texture for maze floor
+  floorTexture=loader.load('images/Tile.jpg');
+  floorTexture.wrapS = THREE.RepeatWrapping; 
+  floorTexture.wrapT = THREE.RepeatWrapping;
+  floorTexture.repeat.set(10, 10);
+
+  //Texture for maze walls
+  wallTexture=loader.load('images/Wall.jpg');
+
   var threejsContainer=document.getElementById("threejsContainer");
   threejsContainer.appendChild(renderer.domElement);
 	document.body.onresize=updateRenderer;
@@ -173,9 +184,8 @@ function initGame()
     ///CREATING OBJECTS TO BE ADDED TO THE SCENE
   
     //Create the maze with Grid-class from grid.js
-    //You can now apply a texture on the grid floor
-    //for now the texture is null
-    grid=new Grid(10,10,0,0,10,null)
+    floorTexture.repeat.set(10, 10);
+    grid=new Grid(10,10,10,floorTexture,wallTexture)
     scene.add(grid.plane)
     for(var i=0;i<grid.walls.length;i++)
     {
@@ -187,8 +197,8 @@ function initGame()
         const color = 0xFFFFFF;
         const intensity = 1;
         const light = new THREE.DirectionalLight(color, intensity);
-        light.position.set(0, 0, 1);
-        light.target.position.set(0, 0, -1);
+        light.position.set(-1, -1, 1);
+        light.target.position.set(1, 1, -2);
         scene.add(light);
         scene.add(light.target);
     }
