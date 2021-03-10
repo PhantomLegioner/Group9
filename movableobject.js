@@ -6,6 +6,8 @@ export class MovingObject
   //Constructor
   constructor(model,grid,pos_x,pos_y,speed)
   {
+    this.counter=0;
+    this.max=3;
     this.grid=grid
     this.model=model;
     this.dir="none";
@@ -149,6 +151,10 @@ export class MovingObject
         {
           this.dir=this.dirQueue;
         }
+      }
+      if(this.offset_x==0 && this.offset_y==0 && this.dirQueue=="none")
+      {
+        this.dir="none";
       }
     }
     if(this.canMove(this.dir))

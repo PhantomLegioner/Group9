@@ -73,7 +73,11 @@ function updateRenderer()
 //Starts the game
 function initGame()
 {
-    playSound(backgroundMusic);
+    if(music)
+    {
+      playSound(backgroundMusic);
+    }
+    
     ///INITIALIZING THREE.JS SCENE AND CAMERA
     //Create scene and camera
     scene = new THREE.Scene();
@@ -88,7 +92,8 @@ function initGame()
     //for now the texture is null
     grid=new Grid(10,10,0,0,10,null)
     scene.add(grid.plane)
-    for(var i=0;i<grid.walls.length;i++){
+    for(var i=0;i<grid.walls.length;i++)
+    {
         scene.add(grid.walls[i]);
     }
   
@@ -113,28 +118,43 @@ function initGame()
     //This function defines how the ghost "AI" works
     const ghostCallback=function(obj, event)
     {
-      const dirs=["up","down","right","left"];
-      const rand=Math.floor(Math.random() * dirs.length);
-      //console.log("ghostCallback called")
-      for(var i=0;i<4;i++)
+      if((event==null && obj.dir=="none") || (event!=null && event.type=="new_tile"))
       {
-        //If we moved to new tile, then don't move in 
-        //the opposite direction
-        var dir=dirs[(rand+i)%4];
-        if(event!=null)
+        var targetTileIndex=grid.encodeTile(pacman.pos_x,pacman.pos_y);
+        var currentTileIndex=grid.encodeTile(obj.pos_x,obj.pos_y);
+        var path=grid.djikstraAlgorithm(obj.pos_x,obj.pos_y);
+        var w=0;
+        var h=0;
+
+        while(path[targetTileIndex]!=null)
         {
-          if(event.type=="new_tile")
+          var temp=grid.decodeTile(path[targetTileIndex]);
+          targetTileIndex=path[targetTileIndex];
+          if(currentTileIndex==targetTileIndex)
           {
-            if(dir=="up" && event.prev_dir=="down") continue;
-            if(dir=="down" && event.prev_dir=="up") continue;
-            if(dir=="left" && event.prev_dir=="right") continue;
-            if(dir=="right" && event.prev_dir=="left") continue;
+            break;
           }
+          w=temp[0];
+          h=temp[1];
+          console.log(w+", "+h);
         }
-        if(obj.canMove(dir))
+        console.log("Current: "+obj.pos_x+", "+obj.pos_y);
+        console.log("Next: "+w+", "+h);
+        if(h>obj.pos_y)
         {
-          obj.queueDirection(dir);
-          break;
+          obj.queueDirection("up");
+        }
+        else if(h<obj.pos_y)
+        {
+          obj.queueDirection("down");
+        }
+        else if(w>obj.pos_x)
+        {
+          obj.queueDirection("right");
+        }
+        else if(w<obj.pos_x)
+        {
+          obj.queueDirection("left");
         }
       }
     }
@@ -150,6 +170,7 @@ function initGame()
     movingObjects.push(ghost);
     ghosts.push(ghost);
 
+    /*
     //Create ghost 2
     ghostModel=createGhost(grid.cubeSize/2,scene);
     ghost=new MovingObject(ghostModel,grid,9,5,0.05);
@@ -173,6 +194,7 @@ function initGame()
     ghostCallback(ghost,null);
     movingObjects.push(ghost);
     ghosts.push(ghost);
+    */
   
     //Place camera in front of box
     camera.position.z = 5;
@@ -224,7 +246,8 @@ function initGame()
             Math.pow(ghost.model.position.y-pacman.model.position.y,2));
           if(dist<grid.cubeSize/2)
           {
-            if(sound){
+            if(sound)
+            {
               playSound(audioClash);
             }
             stopMusic();
@@ -256,15 +279,19 @@ function initGame()
 //and plays the sound
 function playSound(sound)
 {
-  if(sound == backgroundMusic){
+  if(sound == backgroundMusic)
+  {
     backgroundMusic.play();
-  } else {
+  } 
+  else 
+  {
     var newSound=sound.cloneNode();
     newSound.play()
   }
 }
 
-function stopMusic(){
+function stopMusic()
+{
   backgroundMusic.pause();
 }
 
@@ -525,11 +552,15 @@ function showMenus()
 
 var soundEffectIcon = document.getElementById('soundEffectIcon');
 soundEffectIcon.addEventListener('click', controlSounds);
-function controlSounds(){
-  if(sound){
+function controlSounds()
+{
+  if(sound)
+  {
     sound = false;
     document.getElementById("soundEffectIcon").innerHTML="Play sounds effects";
-  } else {
+  } 
+  else 
+  {
     sound = true;
     document.getElementById("soundEffectIcon").innerHTML="Stop sounds effects";
   }
@@ -537,12 +568,16 @@ function controlSounds(){
 
 var backgroundMusicIcon = document.getElementById('backgroundMusicIcon');
 backgroundMusicIcon.addEventListener('click', controlMusic);
-function controlMusic(){
-  if(music){
+function controlMusic()
+{
+  if(music)
+  {
     music = false;
     stopMusic();
     document.getElementById("backgroundMusicIcon").innerHTML="Play background music";
-  } else {
+  } 
+  else 
+  {
     music = true;
     playSound(backgroundMusic);
     document.getElementById("backgroundMusicIcon").innerHTML="Stop background music";

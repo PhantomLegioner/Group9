@@ -10,6 +10,8 @@ export class Grid
     this.cubeSize=this.planeSize/this.mazeSize;
     this.wallWidth=0.1;
     this.wallHeight=0.5;
+
+    //Make a mesh for the maze floor
     {
         const planeGeo = new THREE.PlaneBufferGeometry(this.planeSize, this.planeSize);
         var planeMat=null;
@@ -24,8 +26,11 @@ export class Grid
         this.plane = new THREE.Mesh(planeGeo, planeMat);
     }
     
-    //Create walls and add to scene
-    const cells=newMaze2(this.mazeSize,this.mazeSize)
+    //Generate a random maze
+    const cells=newMaze(this.mazeSize,this.mazeSize)
+
+    //Create an easier to read representation for the maze
+    //(this is left over from an earlier version)
     this.grid=[]
     for(var h=0;h<cells.length;h++)
     {
@@ -36,41 +41,41 @@ export class Grid
       }
       this.grid.push(row);
     }
-    //this.walls=Grid.generateMazeMesh(cells,this.mazeSize,this.planeSize,this.cubeSize,0.1);
+    
+    //Generate a 3D model of the maze
     this.generateMazeMesh();
   }
   
-  //Get the tile from real-world position
-  getPositionTile(x,y)
-  {
-    var pos=[(x+0.5)*this.cubeSize-this.planeSize/2, (y+0.5)*this.cubeSize-this.planeSize/2];
-  }
-  
-  //Get real-world position of tile
+  //Get real-world position of tile (w,h)
   getTilePosition(w,h)
   {
     var pos=[(w+0.5)*this.cubeSize-this.planeSize/2, (h+0.5)*this.cubeSize-this.planeSize/2];
     return pos;
   }
   
-  canMove(w0,h0,dir,speed)
+  //Check if can move in direction from (w0,h0)
+  canMove(w0,h0,dir)
   {
-    if(dir=="up")
+    if(w0>=0 && w0<this.width && h0>=0 && h0<this.height)
     {
-      return !this.grid[Math.floor(h0+0.01)][Math.floor(w0)].top;
+      if(dir=="up")
+      {
+        return !this.grid[Math.floor(h0)][Math.floor(w0)].top;
+      }
+      if(dir=="right")
+      {
+        return !this.grid[Math.floor(h0)][Math.floor(w0)].right;
+      }
+      if(dir=="down")
+      {
+        return !this.grid[Math.ceil(h0)][Math.floor(w0)].bottom;
+      }
+      if(dir=="left")
+      {
+        return !this.grid[Math.floor(h0)][Math.ceil(w0)].left;
+      }
     }
-    if(dir=="right")
-    {
-      return !this.grid[Math.floor(h0)][Math.floor(w0+0.01)].right;
-    }
-    if(dir=="down")
-    {
-      return !this.grid[Math.ceil(h0-0.01)][Math.floor(w0)].bottom;
-    }
-    if(dir=="left")
-    {
-      return !this.grid[Math.floor(h0)][Math.ceil(w0-0.01)].left;
-    }
+    else return false;
   }
   
   //This generates the actual 3D model of the maze
@@ -84,198 +89,163 @@ export class Grid
     this.walls=[];
     for(var i=0;i<this.grid.length;i++)
     {
-        for(var j=0;j<this.grid[0].length;j++)
+      for(var j=0;j<this.grid[0].length;j++)
+      {
+        //Material is the same for all walls
+        const cubeMat = new THREE.MeshPhongMaterial( { color: 0x0000ff, vertexColors: true } );
+      
+        //Check if tile has bottom wall
+        if(this.grid[i][j].bottom)
         {
-            //Material is the same for all walls
-            const cubeMat = new THREE.MeshPhongMaterial( { color: 0x0000ff, vertexColors: true } );
-          
-            //Check if tile has bottom wall
-            if(this.grid[i][j].bottom)
-            {
-                const cubeGeo = new THREE.BoxGeometry(this.cubeSize,this.cubeSize*this.wallWidth,this.cubeSize*this.wallHeight);
-                var cube = new THREE.Mesh(cubeGeo, cubeMat);
-                cube.position.x=(j+0.5)*this.cubeSize-this.planeSize/2;
-                cube.position.y=(i+this.wallWidth/2)*this.cubeSize-this.planeSize/2;
-                cube.position.z=this.cubeSize/4
-                this.walls.push(cube);
-            }
-            //Check if tile has right wall
-            if(this.grid[i][j].right)
-            {
-                const cubeGeo = new THREE.BoxGeometry(this.cubeSize*this.wallWidth,this.cubeSize,this.cubeSize*this.wallHeight);
-                var cube = new THREE.Mesh( cubeGeo, cubeMat);
-                cube.position.x=(j+1-this.wallWidth/2)*this.cubeSize-this.planeSize/2;
-                cube.position.y=(i+0.5)*this.cubeSize-this.planeSize/2;
-                cube.position.z=this.cubeSize/4
-                this.walls.push(cube);
-            }
-          
-            //Check if tile has top wall
-            if(this.grid[i][j].top)
-            {
-                const cubeGeo = new THREE.BoxGeometry(this.cubeSize,this.cubeSize*this.wallWidth,this.cubeSize*this.wallHeight);
-                var cube = new THREE.Mesh(cubeGeo, cubeMat);
-                cube.position.x=(j+0.5)*this.cubeSize-this.planeSize/2;
-                cube.position.y=(i+1-this.wallWidth/2)*this.cubeSize-this.planeSize/2;
-                cube.position.z=this.cubeSize/4
-                this.walls.push(cube);
-            }
-          
-            //Check if tile has left wall
-            if(this.grid[i][j].left)
-            {
-                const cubeGeo = new THREE.BoxGeometry(this.cubeSize*this.wallWidth,this.cubeSize,this.cubeSize*this.wallHeight);
-                var cube = new THREE.Mesh( cubeGeo, cubeMat);
-                cube.position.x=(j+this.wallWidth/2)*this.cubeSize-this.planeSize/2;
-                cube.position.y=(i+0.5)*this.cubeSize-this.planeSize/2;
-                cube.position.z=this.cubeSize/4
-                this.walls.push(cube);
-            }
+            const cubeGeo = new THREE.BoxGeometry(this.cubeSize,this.cubeSize*this.wallWidth,this.cubeSize*this.wallHeight);
+            var cube = new THREE.Mesh(cubeGeo, cubeMat);
+            cube.position.x=(j+0.5)*this.cubeSize-this.planeSize/2;
+            cube.position.y=(i+this.wallWidth/2)*this.cubeSize-this.planeSize/2;
+            cube.position.z=this.cubeSize/4
+            this.walls.push(cube);
         }
+        //Check if tile has right wall
+        if(this.grid[i][j].right)
+        {
+            const cubeGeo = new THREE.BoxGeometry(this.cubeSize*this.wallWidth,this.cubeSize,this.cubeSize*this.wallHeight);
+            var cube = new THREE.Mesh( cubeGeo, cubeMat);
+            cube.position.x=(j+1-this.wallWidth/2)*this.cubeSize-this.planeSize/2;
+            cube.position.y=(i+0.5)*this.cubeSize-this.planeSize/2;
+            cube.position.z=this.cubeSize/4
+            this.walls.push(cube);
+        }
+      
+        //Check if tile has top wall
+        if(this.grid[i][j].top)
+        {
+            const cubeGeo = new THREE.BoxGeometry(this.cubeSize,this.cubeSize*this.wallWidth,this.cubeSize*this.wallHeight);
+            var cube = new THREE.Mesh(cubeGeo, cubeMat);
+            cube.position.x=(j+0.5)*this.cubeSize-this.planeSize/2;
+            cube.position.y=(i+1-this.wallWidth/2)*this.cubeSize-this.planeSize/2;
+            cube.position.z=this.cubeSize/4
+            this.walls.push(cube);
+        }
+      
+        //Check if tile has left wall
+        if(this.grid[i][j].left)
+        {
+            const cubeGeo = new THREE.BoxGeometry(this.cubeSize*this.wallWidth,this.cubeSize,this.cubeSize*this.wallHeight);
+            var cube = new THREE.Mesh( cubeGeo, cubeMat);
+            cube.position.x=(j+this.wallWidth/2)*this.cubeSize-this.planeSize/2;
+            cube.position.y=(i+0.5)*this.cubeSize-this.planeSize/2;
+            cube.position.z=this.cubeSize/4
+            this.walls.push(cube);
+        }
+      }
     }
   }
-  
-//This generates the actual 3D model of the maze
-static generateMazeMeshOld(grid,mazeSize,planeSize,cubeSize,wallWidth)
-{
-    //Generate a grid of wall positions
-    //grid[i][j][0]="boolean of is there an empty space 
-    //at the top of tile (i,j)"
-    
-    //Iterate through grid
-    var walls=[];
-    for(var i=0;i<grid.length;i++)
-    {
-        for(var j=0;j<grid[0].length;j++)
-        {
-            //Material is the same for all walls
-            const cubeMat = new THREE.MeshPhongMaterial( { color: 0x0000ff, vertexColors: true } );
-          
-            //Check if tile has top wall
-            if(grid[i][j][0]==0)
-            {
-                const cubeGeo = new THREE.BoxGeometry(cubeSize,cubeSize*wallWidth,cubeSize*0.5);
-                var cube = new THREE.Mesh( cubeGeo, cubeMat);
-                cube.position.x=(j+0.5)*cubeSize-planeSize/2;
-                cube.position.y=(i+wallWidth/2)*cubeSize-planeSize/2;
-                cube.position.z=cubeSize/4
-                walls.push(cube);
-            }
-            //Check if tile has right wall
-            if(grid[i][j][1]==0)
-            {
-                const cubeGeo = new THREE.BoxGeometry(cubeSize*wallWidth,cubeSize,cubeSize*0.5);
-                var cube = new THREE.Mesh( cubeGeo, cubeMat);
-                cube.position.x=(j+1-wallWidth/2)*cubeSize-planeSize/2;
-                cube.position.y=(i+0.5)*cubeSize-planeSize/2;
-                cube.position.z=cubeSize/4
-                walls.push(cube);
-            }
-          
-            //Check if tile has bottom wall
-            if(grid[i][j][2]==0)
-            {
-                const cubeGeo = new THREE.BoxGeometry(cubeSize,cubeSize*wallWidth,cubeSize*0.5);
-                var cube = new THREE.Mesh( cubeGeo, cubeMat);
-                cube.position.x=(j+0.5)*cubeSize-planeSize/2;
-                cube.position.y=(i+1-wallWidth/2)*cubeSize-planeSize/2;
-                cube.position.z=cubeSize/4
-                walls.push(cube);
-            }
-          
-            //Check if tile has left wall
-            if(grid[i][j][3]==0)
-            {
-                const cubeGeo = new THREE.BoxGeometry(cubeSize*wallWidth,cubeSize,cubeSize*0.5);
-                var cube = new THREE.Mesh( cubeGeo, cubeMat);
-                cube.position.x=(j+wallWidth/2)*cubeSize-planeSize/2;
-                cube.position.y=(i+0.5)*cubeSize-planeSize/2;
-                cube.position.z=cubeSize/4
-                walls.push(cube);
-            }
-        }
-    }
-    return walls;
-  }
-}
 
+  //Encode tile position as integer
+  encodeTile(w,h)
+  {
+    return h*this.width+w;
+  }
+
+  //Decode tile position from integer
+  decodeTile(i)
+  {
+    var h=Math.floor(i/this.width);
+    var w=i-h*this.width;
+    return [w,h];
+  }
+
+
+  //Djikstra's algorithm inspired by the implementation in
+  //https://www.tutorialspoint.com/Dijkstra-s-algorithm-in-Javascript
+  djikstraAlgorithm(w,h) 
+  {
+    let distances = {};
+    let prev = {};
+    let settled=new Set();
+    let unsettled=new Set();
+
+    var tileIndex=this.encodeTile(w,h);
+    unsettled.add(tileIndex);
+    distances[tileIndex]=0;
+    for(var i=0;i<this.width;i++)
+    {
+      for(var j=0;j<this.height;j++)
+      {
+        var tileIndex2=this.encodeTile(i,j);
+        if(tileIndex2!=tileIndex)
+        {
+          distances[tileIndex2]=Infinity;
+        }
+        prev[tileIndex2]=null;
+      }
+    }
+ 
+    //Iterate the algorithm
+    while(unsettled.size!=0) 
+    {
+
+      //Find lowest distance tile
+      let minDist=Infinity;
+      let minTile=0;
+      for(var tile of unsettled)
+      {
+        if(distances[tile]<minDist)
+        {
+          minDist=distances[tile];
+          minTile=tile;
+        }
+      }
+      unsettled.delete(minTile);
+      settled.add(minTile);
+      var temp=this.decodeTile(minTile);
+      let w0=temp[0];
+      let h0=temp[1];
+      const dirs=["up","down","right","left"];
+      for(var i=0;i<4;i++)
+      {    
+        var dir=dirs[i];
+        if(this.canMove(w0,h0,dir))
+        {
+          var w1=w0;
+          var h1=h0;
+          if(dir=="up")
+          {
+            h1+=1;
+          }
+          if(dir=="down")
+          {
+            h1-=1;
+          }
+          if(dir=="left")
+          {
+            w1-=1;
+          }
+          if(dir=="right")
+          {
+            w1+=1;
+          }
+          var neighborTile=this.encodeTile(w1,h1);
+          if(!settled.has(neighborTile))
+          {
+            var dist=minDist+1;
+            distances[neighborTile]=dist;
+            prev[neighborTile]=minTile;
+            unsettled.add(neighborTile);
+          }
+        }
+      }
+    }
+    return prev;
+ }
+}
 
 //This generates a 3D array called cells
-//The map is divided into tiles, where tile (0,0)
-//is the top left corner. Then we have
-//cells[i][j][0]=[i][j][0]="boolean of is there no top wall
-//in tile (i,j)", cells[i][j][1] ... right wall ... etc.
-
-//From https://dstromberg.com/2013/07/tutorial-random-maze-generation-algorithm-in-javascript/
+//cells contains information about the walls
 function newMaze(x, y) 
 {
-  // Establish variables and starting grid
-  var totalCells = x*y;
-  var cells = new Array();
-  var unvis = new Array();
-  for (var i = 0; i < y; i++) 
-  {
-    cells[i] = new Array();
-    unvis[i] = new Array();
-    for (var j = 0; j < x; j++) 
-    {
-      cells[i][j] = [0,0,0,0];
-      unvis[i][j] = true;
-    }
-  }
-
-  // Set a random position to start from
-  var currentCell = [Math.floor(Math.random()*y), Math.floor(Math.random()*x)];
-  var path = [currentCell];
-  unvis[currentCell[0]][currentCell[1]] = false;
-  var visited = 1;
-
-  // Loop through all available cell positions
-  while (visited < totalCells) 
-  {
-    // Determine neighboring cells
-    var pot = [[currentCell[0]-1, currentCell[1], 0, 2],
-               [currentCell[0], currentCell[1]+1, 1, 3],
-               [currentCell[0]+1, currentCell[1], 2, 0],
-               [currentCell[0], currentCell[1]-1, 3, 1]];
-    var neighbors = new Array();
-
-    // Determine if each neighboring cell is in game grid, and whether it has already been checked
-    for (var l = 0; l < 4; l++) 
-    {
-      if (pot[l][0] > -1 && pot[l][0] < y && pot[l][1] > -1 && pot[l][1] < x && unvis[pot[l][0]][pot[l][1]]) { neighbors.push(pot[l]); }
-    }
-
-    // If at least one active neighboring cell has been found
-    if (neighbors.length) 
-    {
-      // Choose one of the neighbors at random
-      var next = neighbors[Math.floor(Math.random()*neighbors.length)];
-
-      // Remove the wall between the current cell and the chosen neighboring cell
-      cells[currentCell[0]][currentCell[1]][next[2]] = 1;
-      cells[next[0]][next[1]][next[3]] = 1;
-
-      // Mark the neighbor as visited, and set it as the current cell
-      unvis[next[0]][next[1]] = false;
-      visited++;
-      currentCell = [next[0], next[1]];
-      path.push(currentCell);
-    }
-    // Otherwise go back up a step and keep going
-    else 
-    {
-      currentCell = path.pop();
-    }
-  }
-  return cells;
-}
-
-function newMaze2(x, y) 
-{
   var cells = new Array();
 
-  //Make outer walls
+  //Make the outer walls
   for (var i = 0; i < y; i++) 
   {
     cells[i] = new Array();
@@ -295,14 +265,17 @@ function newMaze2(x, y)
     cells[i][y-1][1] = 0;
   }
 
-  //Divide and conquer algorithm
+  //Start divide and conquer algorithm
   newMaze_r(cells,0,x,0,y,0);
+
+  //Return finalized maze
   return cells;
 }
 
 //Divides the maze by a horizontal or vertical wall
-//with one door and repeat for both halves
-//until room is 1 cell wide or tall
+//with one or multiple doors and repeat for both halves
+//until room is 1 cell wide or tall.
+//This ensures all tiles are accessible.
 function newMaze_r(cells, lo_x, hi_x, lo_y, hi_y,depth)
 {
   if(hi_x-lo_x>1 && hi_y-lo_y>1 && hi_x-lo_x+hi_y-lo_y>2)
