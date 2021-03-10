@@ -6,8 +6,6 @@ export class MovingObject
   //Constructor
   constructor(model,grid,pos_x,pos_y,speed)
   {
-    this.counter=0;
-    this.max=3;
     this.grid=grid
     this.model=model;
     this.dir="none";

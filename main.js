@@ -35,12 +35,23 @@ import {MovingObject} from './movableobject.js';
   var scene = null;
 	var camera = null;
 
+class GhostAI
+{
+
+  targetTile()
+  {
+    return [pacman.pos_x, pacman.pos_y];
+  }
+
   //This function defines how the ghost "AI" works
-  const ghostCallback=function(obj, event)
+  ghostCallback(obj, event)
   {
     if((event==null && obj.dir=="none") || (event!=null))
     {
-      var targetTileIndex=grid.encodeTile(pacman.pos_x,pacman.pos_y);
+      
+      var targetTile=this.targetTile()
+      var targetTileIndex=grid.encodeTile(targetTile[0],targetTile[1]);
+      console.log("Finding path to ("+targetTile[0]+", "+targetTile[1]+")");
       var currentTileIndex=grid.encodeTile(obj.pos_x,obj.pos_y);
       var path=grid.djikstraAlgorithm(obj.pos_x,obj.pos_y);
       var w=pacman.pos_x;
@@ -55,10 +66,8 @@ import {MovingObject} from './movableobject.js';
         }
         w=temp[0];
         h=temp[1];
-        console.log(w+", "+h);
+        console.log("("+w+", "+h+")")
       }
-      console.log("Current: "+obj.pos_x+", "+obj.pos_y);
-      console.log("Next: "+w+", "+h);
       if(h>obj.pos_y)
       {
         obj.queueDirection("up");
@@ -77,6 +86,39 @@ import {MovingObject} from './movableobject.js';
       }
     }
   }
+}
+
+//Target tile is 4 tiles from
+//pacman in the direction pacman is moving
+class AmbushAI extends GhostAI
+{
+  targetTile()
+  {
+    var target_x=pacman.pos_x;
+    var target_y=pacman.pos_y;
+    var dir=pacman.dir;
+    if(dir=="up")
+    {
+      target_y+=4;
+    }
+    if(dir=="down")
+    {
+      target_y-=4;
+    }
+    if(dir=="left")
+    {
+      target_x-=4;
+    }
+    if(dir=="right")
+    {
+      target_x+=4;
+    }
+    target_x=Math.max(0, Math.min(target_x, grid.width-1));
+    target_y=Math.max(0, Math.min(target_y, grid.height-1));
+    return [target_x, target_y];
+  }
+}
+
 
 
 //This gets called when index.html is loaded
@@ -161,26 +203,30 @@ function initGame()
     //Create 4 ghosts
     //Perhaps eventually different ghost have different AI
 
+    var ghostAI=new GhostAI();
+    var ambushAI=new AmbushAI();
+
     //Create ghost 
-    var ghostModel=createGhost(grid.cubeSize/2,scene);
-    var ghost=new MovingObject(ghostModel,grid,5,5,0.05);
-    ghost.registerCallback(ghostCallback);
-    ghostCallback(ghost,null);
+    var ghostModel=createGhost(grid.cubeSize/2,scene,0xFF00FF);
+    var ghost=new MovingObject(ghostModel,grid,5,5,0.04);
+    ghost.registerCallback((obj,event)=>ghostAI.ghostCallback(obj,event));
+    ghostAI.ghostCallback(ghost,null);
+    movingObjects.push(ghost);
+    ghosts.push(ghost);
+
+
+    //Create ghost 2
+    ghostModel=createGhost(grid.cubeSize/2,scene,0x00FF00);
+    ghost=new MovingObject(ghostModel,grid,9,5,0.04);
+    ghost.registerCallback((obj,event)=>ambushAI.ghostCallback(obj,event));
+    ambushAI.ghostCallback(ghost,null);
     movingObjects.push(ghost);
     ghosts.push(ghost);
 
     /*
-    //Create ghost 2
-    ghostModel=createGhost(grid.cubeSize/2,scene);
-    ghost=new MovingObject(ghostModel,grid,9,5,0.05);
-    ghost.registerCallback(ghostCallback);
-    ghostCallback(ghost,null);
-    movingObjects.push(ghost);
-    ghosts.push(ghost);
-
     //Create ghost 3
     ghostModel=createGhost(grid.cubeSize/2,scene);
-    ghost=new MovingObject(ghostModel,grid,5,9,0.05);
+    ghost=new MovingObject(ghostModel,grid,5,9,0.04);
     ghost.registerCallback(ghostCallback);
     ghostCallback(ghost,null);
     movingObjects.push(ghost);
@@ -188,7 +234,7 @@ function initGame()
 
     //Create ghost 4
     ghostModel=createGhost(grid.cubeSize/2,scene);
-    ghost=new MovingObject(ghostModel,grid,9,9,0.05);
+    ghost=new MovingObject(ghostModel,grid,9,9,0.04);
     ghost.registerCallback(ghostCallback);
     ghostCallback(ghost,null);
     movingObjects.push(ghost);
@@ -241,10 +287,12 @@ function initGame()
         for(var i = 0; i<ghosts.length; i++)
         {
           var ghost=ghosts[i];
+          /*
           if(ghost.dir=="none")
           {
               ghostCallback(ghost,null);
           }
+          */
           var dist=Math.sqrt(Math.pow(ghost.model.position.x-pacman.model.position.x,2)+
             Math.pow(ghost.model.position.y-pacman.model.position.y,2));
           if(dist<grid.cubeSize/2)
@@ -399,13 +447,13 @@ function createPacman(size,scene)
 }
 
 //This creates the model for ghosts
-function createGhost(size,scene)
+function createGhost(size,scene,color)
 {
     //Get a cylinder mesh
     const geometry = new THREE.CylinderGeometry(size/2, size/2, size/2, 32);
   
     //Get a yellow solid material
-    const material = new THREE.MeshPhongMaterial({color: 0xFF00FF, side: THREE.DoubleSide,});
+    const material = new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide,});
   
     //Make a yellow cylinder
     const cylinder = new THREE.Mesh(geometry, material);
