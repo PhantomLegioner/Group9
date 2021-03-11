@@ -164,7 +164,7 @@ export class Grid
 
 
   //Djikstra's algorithm inspired by the implementation in
-  //https://www.tutorialspoint.com/Dijkstra-s-algorithm-in-Javascript
+  //https://www.baeldung.com/java-dijkstra
   djikstraAlgorithm(w,h) 
   {
     let distances = {};
@@ -205,6 +205,8 @@ export class Grid
       }
       unsettled.delete(minTile);
       settled.add(minTile);
+
+      //Handle neighboring tiles
       var temp=this.decodeTile(minTile);
       let w0=temp[0];
       let h0=temp[1];
@@ -274,7 +276,7 @@ function newMaze(x, y)
   }
 
   //Start divide and conquer algorithm
-  newMaze_r(cells,0,x,0,y,0);
+  newMaze_r(cells,0,x,0,y,0,0,0,0);
 
   //Return finalized maze
   return cells;
@@ -284,21 +286,34 @@ function newMaze(x, y)
 //with one or multiple doors and repeat for both halves
 //until room is 1 cell wide or tall.
 //This ensures all tiles are accessible.
-function newMaze_r(cells, lo_x, hi_x, lo_y, hi_y,depth)
+function newMaze_r(cells, lo_x, hi_x, lo_y, hi_y, prev_wallPos, prev_vertical, depth)
 {
-  if(hi_x-lo_x>1 && hi_y-lo_y>1 && hi_x-lo_x+hi_y-lo_y>4)
+  //Check that remaining half is more than 1 wide and tall
+  //and that it is not a 2x2 square
+  if(hi_x-lo_x>1 && hi_y-lo_y>1 && !(hi_x-lo_x==2 && hi_y-lo_y==2))
   {
+    //Use vertical wall if room is wider than it is taller;
+    //horizontal otherwise
     const vertical=(hi_x-lo_x>hi_y-lo_y);
+
+    //Build vertical wall
     if(vertical==true)
     {
 
+      //Wall y-position is randomized
       const wallPos=1+lo_x+Math.floor(Math.random()*(hi_x-lo_x-1));
-      var numberDoors=1+Math.floor((hi_y-lo_y)/2);
+
+      //Number of doors depends on the length of the wall
+      //Positions of doors are randomized
+      //var numberDoors=1+Math.floor((hi_y-lo_y)/2);
+      var numberDoors=1;
       var doorPos=[];
       for(var i=0; i<numberDoors; i++)
       {
         doorPos.push(1+lo_y+Math.floor(Math.random()*(hi_y-lo_y-1)));
       }
+
+      //Fill in the wall with doors excluded
       for (var i = lo_y; i < hi_y; i++)
       {
         if(!doorPos.includes(i))
@@ -307,13 +322,28 @@ function newMaze_r(cells, lo_x, hi_x, lo_y, hi_y,depth)
           cells[i][wallPos-1][1] = 0;
         }
       }
-      newMaze_r(cells,lo_x,wallPos,lo_y,hi_y,depth+1);
-      newMaze_r(cells,wallPos,hi_x,lo_y,hi_y,depth+1);
+
+      //Create a door from both new halves into previous half
+      //if possible. This makes multiple escape routes (hopefully)
+      if(!prev_vertical && prev_wallPos!=0)
+      {
+        var doorPos1=lo_x+Math.floor((wallPos-lo_x)/2);
+        var doorPos2=wallPos+Math.floor((hi_x-wallPos)/2);
+        cells[prev_wallPos][doorPos1][0] = 1;
+        cells[prev_wallPos-1][doorPos1][2] = 1;
+        cells[prev_wallPos][doorPos2][0] = 1;
+        cells[prev_wallPos-1][doorPos2][2] = 1;
+      }
+      //Repeat algorithm for both halves
+      newMaze_r(cells,lo_x,wallPos,lo_y,hi_y,wallPos,vertical,depth+1);
+      newMaze_r(cells,wallPos,hi_x,lo_y,hi_y,wallPos,vertical,depth+1);
     }
+    //Build horizontal wall (works almost the same way as vertical walls)
     else
     {
       const wallPos=1+lo_y+Math.floor(Math.random()*(hi_y-lo_y-1)); 
-      var numberDoors=1+Math.floor((hi_x-lo_x)/2);
+      //var numberDoors=1+Math.floor((hi_x-lo_x)/2);
+      var numberDoors=1;
       var doorPos=[];
       for(var i=0; i<numberDoors; i++)
       {
@@ -327,8 +357,17 @@ function newMaze_r(cells, lo_x, hi_x, lo_y, hi_y,depth)
           cells[wallPos-1][j][2] = 0;
         }
       }
-      newMaze_r(cells,lo_x,hi_x,lo_y,wallPos,depth+1);
-      newMaze_r(cells,lo_x,hi_x,wallPos,hi_y,depth+1);
+      if(prev_vertical && prev_wallPos!=0)
+      {
+        var doorPos1=lo_y+Math.floor((wallPos-lo_y)/2);
+        var doorPos2=wallPos+Math.floor((hi_y-wallPos)/2);
+        cells[doorPos1][prev_wallPos][3] = 1;
+        cells[doorPos1][prev_wallPos-1][1] = 1;
+        cells[doorPos2][prev_wallPos][3] = 1;
+        cells[doorPos2][prev_wallPos-1][1] = 1;
+      }
+      newMaze_r(cells,lo_x,hi_x,lo_y,wallPos,wallPos,vertical,depth+1);
+      newMaze_r(cells,lo_x,hi_x,wallPos,hi_y,wallPos,vertical,depth+1);
     }
   }
 }

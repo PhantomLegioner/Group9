@@ -24,6 +24,7 @@ import {MovingObject} from './movableobject.js';
   var pacman=null;
   var movingObjects=[];
   var ghosts=[]
+  var ghostAI=null;
   var allCollectables=[];
   
   //Maze is stored as a Grid object from grid.js
@@ -39,21 +40,58 @@ import {MovingObject} from './movableobject.js';
 	var camera = null;
   var level = null;
 
+//Default "dumb" GhostAI
 class GhostAI
 {
+  //ghostCallback gets called when ghost moves to a new tile
+  //or when it stops moving. This default implementation
+  //moves the ghost in a random direction
+  ghostCallback(obj, event)
+  {
+    const dirs=["up","down","right","left"];
+    const rand=Math.floor(Math.random() * dirs.length);
+    for(var i=0;i<4;i++)
+    {
+      //If we moved to new tile, then don't move in 
+      //the opposite direction
+      var dir=dirs[(rand+i)%4];
+      if(event!=null)
+      {
+        if(event.type=="new_tile")
+        {
+          if(dir=="up" && event.prev_dir=="down") continue;
+          if(dir=="down" && event.prev_dir=="up") continue;
+          if(dir=="left" && event.prev_dir=="right") continue;
+          if(dir=="right" && event.prev_dir=="left") continue;
+        }
+      }
+      if(obj.canMove(dir))
+      {
+        obj.queueDirection(dir);
+        break;
+      }
+    }
+  }
+}
 
+//TargetAI targets a tile and moves along the shortest
+//path to it
+class TargetAI extends GhostAI
+{
+
+  //Which tile to target
   targetTile()
   {
     return [pacman.pos_x, pacman.pos_y];
   }
 
-  //This function defines how the ghost "AI" works
+
   ghostCallback(obj, event)
   {
     if((event==null && obj.dir=="none") || (event!=null))
     {
       
-      var targetTile=this.targetTile()
+      var targetTile=this.targetTile(obj)
       var targetTileIndex=grid.encodeTile(targetTile[0],targetTile[1]);
       console.log("Finding path to ("+targetTile[0]+", "+targetTile[1]+")");
       var currentTileIndex=grid.encodeTile(obj.pos_x,obj.pos_y);
@@ -92,30 +130,35 @@ class GhostAI
   }
 }
 
-//Target tile is 4 tiles from
+//AmbusAI targets a tile that is 4 tiles from
 //pacman in the direction pacman is moving
-class AmbushAI extends GhostAI
+//unless ghost is close enough to pacman
+class AmbushAI extends TargetAI
 {
-  targetTile()
+  targetTile(obj)
   {
     var target_x=pacman.pos_x;
     var target_y=pacman.pos_y;
-    var dir=pacman.dir;
-    if(dir=="up")
+    var dist=Math.abs(target_x-obj.pos_x)+Math.abs(target_y-obj.pos_y)
+    if(dist>=2)
     {
-      target_y+=4;
-    }
-    if(dir=="down")
-    {
-      target_y-=4;
-    }
-    if(dir=="left")
-    {
-      target_x-=4;
-    }
-    if(dir=="right")
-    {
-      target_x+=4;
+      var dir=pacman.dir;
+      if(dir=="up")
+      {
+        target_y+=4;
+      }
+      if(dir=="down")
+      {
+        target_y-=4;
+      }
+      if(dir=="left")
+      {
+        target_x-=4;
+      }
+      if(dir=="right")
+      {
+        target_x+=4;
+      }
     }
     target_x=Math.max(0, Math.min(target_x, grid.width-1));
     target_y=Math.max(0, Math.min(target_y, grid.height-1));
@@ -215,7 +258,7 @@ function initGame()
     //Create 4 ghosts
     //Perhaps eventually different ghost have different AI
 
-    var ghostAI=new GhostAI();
+    ghostAI=new TargetAI();
     var ambushAI=new AmbushAI();
 
     //Create ghost 
@@ -299,12 +342,10 @@ function initGame()
         for(var i = 0; i<ghosts.length; i++)
         {
           var ghost=ghosts[i];
-          /*
           if(ghost.dir=="none")
           {
-              ghostCallback(ghost,null);
+              ghostAI.ghostCallback(ghost,null);
           }
-          */
           var dist=Math.sqrt(Math.pow(ghost.model.position.x-pacman.model.position.x,2)+
             Math.pow(ghost.model.position.y-pacman.model.position.y,2));
           if(dist<grid.cubeSize/2)

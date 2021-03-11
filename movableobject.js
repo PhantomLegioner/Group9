@@ -10,15 +10,26 @@ export class MovingObject
     this.model=model;
     this.dir="none";
     this.dirQueue="none";
+
+    //Position of object in entire tiles 
     this.pos_x=pos_x;
     this.pos_y=pos_y;
+
+    //Offset is used to measure how much in-between tiles
+    //the object is
     this.offset_x=0;
     this.offset_y=0;
+
+
     this.speed=speed;
     this.position=model.position;
+
+    //Move model to tile position
     var pos=this.grid.getTilePosition(pos_x,pos_y);
     this.model.position.x=pos[0];
     this.model.position.y=pos[1];
+
+    //This stores callbacks
     this.callbacks=[]
   }
 
@@ -33,32 +44,38 @@ export class MovingObject
   }
 
   //Checks if  object can move in direction
+  //Objects can only turn 180 degrees if they are in
+  //between tiles.
   canMove(dir)
   {
     var move=false;
     if(dir=="up")
     {
-      if(this.offset_y!=0 || (this.offset_y==0 && this.grid.canMove(this.pos_x,this.pos_y,dir))){
+      if(this.offset_y!=0 || (this.offset_x==0 && this.grid.canMove(this.pos_x,this.pos_y,dir))){
         move=true;
       }
     }
     if(dir=="down")
     {
-      if(this.offset_y!=0 || (this.offset_y==0 && this.grid.canMove(this.pos_x,this.pos_y,dir))){
+      if(this.offset_y!=0 || (this.offset_x==0 && this.grid.canMove(this.pos_x,this.pos_y,dir))){
         move=true;
       }
     }
     if(dir=="right")
     {
-      if(this.offset_x!=0 || (this.offset_x==0 && this.grid.canMove(this.pos_x,this.pos_y,dir))){
+      if(this.offset_x!=0 || (this.offset_y==0 && this.grid.canMove(this.pos_x,this.pos_y,dir))){
         move=true;
       }
     }
     if(dir=="left")
     {
-      if(this.offset_x!=0 || (this.offset_x==0 && this.grid.canMove(this.pos_x,this.pos_y,dir))){
+      if(this.offset_x!=0 || (this.offset_y==0 && this.grid.canMove(this.pos_x,this.pos_y,dir))){
         move=true;
       }
+    }
+    if(this.offset_x==0 && this.offset_y==0 && this.dirQueue=="none")
+    {
+      move=true;
     }
     return move;
   }
@@ -84,27 +101,32 @@ export class MovingObject
     {
       this.offset_x-=this.speed;
     }
-
-    if(this.offset_y>=1){
+    if(this.offset_y>=1)
+    {
       this.offset_y=0;
       this.pos_y+=1;
     }
-    if(this.offset_y<=-1){
+    if(this.offset_y<=-1)
+    {
       this.offset_y=0;
       this.pos_y-=1;
     }
-    if(temp_y!=0 && Math.sign(this.offset_y)!=Math.sign(temp_y)){
+    if(temp_y!=0 && Math.sign(this.offset_y)!=Math.sign(temp_y))
+    {
       this.offset_y=0;
     }
-    if(this.offset_x>=1){
+    if(this.offset_x>=1)
+    {
       this.offset_x=0;
       this.pos_x+=1;
     }
-    if(this.offset_x<=-1){
+    if(this.offset_x<=-1)
+    {
       this.offset_x=0;
       this.pos_x-=1;
     }
-    if(temp_x!=0 && Math.sign(this.offset_x)!=Math.sign(temp_x)){
+    if(temp_x!=0 && Math.sign(this.offset_x)!=Math.sign(temp_x))
+    {
       this.offset_x=0;
     }
   }
@@ -119,65 +141,51 @@ export class MovingObject
   }
 
   //Queue a direction to move in
+  //Object will attempt to move in this direction
+  //when possible
   queueDirection(direction)
   {
     this.dirQueue = direction;
   }
 
-  //Updates the position and speed of object
+  //Updates the position and movement of object
   update()
   {
+    //Store previous values for the movement logic
     var temp_dir=this.dir;
     var temp_x=this.pos_x;
     var temp_y=this.pos_y;
-    var temp_offset_x=this.offset_x;
-    var temp_offset_y=this.offset_y;
     
-    //Check if can turn in queued direction
-    if(this.dirQueue!=this.dir)
+    //Check if can move in queued direction
+    if(this.canMove(this.dirQueue))
     {
-      if(this.dirQueue=="right" || this.dirQueue=="left")
-      {
-        if(this.offset_y==0 && (this.grid.canMove(this.pos_x,this.pos_y,this.dirQueue) || this.offset_x!=0))
-        {
-          this.dir=this.dirQueue;
-        }
-      }
-      if(this.dirQueue=="up" || this.dirQueue=="down")
-      {
-        if(this.offset_x==0 && (this.grid.canMove(this.pos_x,this.pos_y,this.dirQueue) || this.offset_y!=0))
-        {
-          this.dir=this.dirQueue;
-        }
-      }
-      if(this.offset_x==0 && this.offset_y==0 && this.dirQueue=="none")
-      {
-        this.dir="none";
-      }
+      this.dir=this.dirQueue;
     }
+
+    //Move in direction
     if(this.canMove(this.dir))
     {
       this.move(this.dir);
     }
-    else
+    else //If cannot move, then set directio to none
     {
       this.dir="none";
     }
 
-
-    //Check if movement stopped
+    //Post event if movement stopped
     if(temp_dir!=this.dir && this.dir=="none")
     {
       var event={type:"stopped_moving", prev_x:temp_x, prev_x:temp_y, prev_dir:temp_dir}
       this.postEvent(event);
     }
-    else if(temp_x!=this.pos_x || temp_y!=this.pos_y) //Check if new tile
+    else if(temp_x!=this.pos_x || temp_y!=this.pos_y) //Post event if entirely on new tile
     {
       var event={type:"new_tile", prev_x:temp_x, prev_x:temp_y, prev_dir: temp_dir}
       this.postEvent(event);
     }
+
     //Get the real world position of the object
-    //and move it there
+    //and move the model there
     var pos=this.grid.getTilePosition(this.pos_x+this.offset_x,this.pos_y+this.offset_y);
     this.position.x=pos[0];
     this.position.y=pos[1];
