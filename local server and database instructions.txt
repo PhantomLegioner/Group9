@@ -1,0 +1,9 @@
+How to get a local server running with a database
+
+1. I used XAMPP for this. I started Apache and MySQL modules.
+
+2. On your browser, go to localhost/phpmyadmin
+
+3. You can create the database there with the script.
+
+
