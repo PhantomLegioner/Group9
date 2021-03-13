@@ -2,7 +2,11 @@
 	min-width: fit-content;
 	min-height: fit-content;
 	text-align: center;
-	font-size: 15px;
+	font-size: 3vmin;
+}
+
+button.small{
+	font-size: 2vmin;
 }
 
 #btnPlay{
@@ -25,19 +29,12 @@
 	transform: translate(-50%,-50%);
 	width: 15vmin;
 	height: 5vmin;
-	font-size: 15px;
 }
 
 #level{
-	/*
-	position: absolute;
-	top: 80%;
-	right: 0%;
-	transform: translate(-50%,-50%);
-	*/
 	width: 15vmin;
 	height: 5vmin;
-	font-size: 15px;
+	font-size: 3vmin;
 	text-align: center;
 }
 
@@ -74,20 +71,26 @@
 }
 
 #selectContainer{
+	display:block;
 	position: absolute;
 	top: 80%;
-	right: 0%;
-	transform: translate(0%,-50%);
+	right: 5%;
+	transform: translate(0%,-60%);
 }
 
 h2{
-	font-size: 4vw;
+	font-size: 4vmin;
 	text-align: center;
 }
 
-label
-{
-	float:top;
+h3{
+	font-size: 3vmin;
+	text-align: center;
+}
+
+label{
+	display:block;
+	font-size: 3vmin;
 }
 
 #loading{
@@ -107,3 +110,28 @@ canvas{
 	width: 50vmin;
 	height: 50vmin;
 }
+
+/*FROM https://www.w3schools.com/css/tryit.asp?filename=trycss_tooltip*/
+.tooltip {
+	position: relative;
+	display: inline-block;
+	border-bottom: 1px dotted black;
+  }
+  
+  .tooltip .tooltiptext {
+	visibility: hidden;
+	width: 120px;
+	background-color: black;
+	color: #fff;
+	text-align: center;
+	border-radius: 6px;
+	padding: 5px 0;
+  
+	/* Position the tooltip */
+	position: absolute;
+	z-index: 1;
+  }
+  
+  .tooltip:hover .tooltiptext {
+	visibility: visible;
+  }

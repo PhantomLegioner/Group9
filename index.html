@@ -15,7 +15,10 @@
 
     <div id="mainContainer">
       <div id="menuContainer">
-          <h2 id="loading">Loading...</h2>
+          <div class="tooltip">Help
+            <span class="tooltiptext">Move with WASD-keys. Collect all 100 points and avoid the cylinders. You can also start the game by pressing R, and toggle music/effects by pressing 1 or 2 resp.</span>
+          </div>
+          <h3 id="loading">Loading...</h3>
           <canvas id="myCanvas"></canvas>
           <div id="selectContainer">
             <label for="level">Select level</label>
@@ -29,13 +32,11 @@
           <button id="btnSave">Highscores</button>
           <h2 id="title"></h2>
           <h3 id="score"></h3>
-          
-        </div>
       </div>
       <div id="currentParamContainer">
         <h3 id="currentScore"></h3>
-        <button id="backgroundMusicIcon">Play music(1)</button>
-        <button id="soundEffectIcon">Stop effects(2)</button>
+        <button class="small" id="backgroundMusicIcon">Play music(1)</button>
+        <button class="small" id="soundEffectIcon">Stop effects(2)</button>
       </div>
       <div id="threejsContainer"></div> 
     </div>
