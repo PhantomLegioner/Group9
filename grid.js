@@ -278,6 +278,12 @@ function newMaze(x, y)
   //Start divide and conquer algorithm
   newMaze_r(cells,0,x,0,y,0,0,0,0);
 
+  cells[1][0][0] = 1;
+  cells[0][0][2] = 1;
+
+  cells[0][1][3] = 1;
+  cells[0][0][1] = 1;
+
   //Return finalized maze
   return cells;
 }

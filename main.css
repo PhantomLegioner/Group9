@@ -1,79 +1,52 @@
-﻿#btnPlay{
+﻿button{
+	min-width: fit-content;
+	min-height: fit-content;
+	text-align: center;
+	font-size: 15px;
+}
+
+#btnPlay{
 	background-color: lightblue;
-	padding: 1em 2em;
 	cursor: pointer;
 	position: absolute;
-	  top: 80%;
-	  left: 50%;
-	  transform: translate(-50%,-50%);
-	width: 10vmin;
-	height: 5vmin;
-	font-size: 15px;
-	text-align: center;
-	vertical-align: middle;
-  }
-
-#level{
-	position: absolute;
 	top: 80%;
-	right: 20%;
-	vertical-align: middle;
-	font-size: 15px;
-	text-align: center;
+	left: 50%;
+	width: 15vmin;
+	height: 5vmin;
+	transform: translate(-50%,-50%);
 }
 
 #btnSave{
 	background-color: lightblue;
-	padding: 1em 2em;
 	cursor: pointer;
 	position: absolute;
-	  top: 80%;
-	  left: 15%;
-	  transform: translate(-50%,-50%);
-	width: 10vmin;
+	top: 80%;
+	left: 15%;
+	transform: translate(-50%,-50%);
+	width: 15vmin;
+	height: 5vmin;
+	font-size: 15px;
+}
+
+#level{
+	/*
+	position: absolute;
+	top: 80%;
+	right: 0%;
+	transform: translate(-50%,-50%);
+	*/
+	width: 15vmin;
 	height: 5vmin;
 	font-size: 15px;
 	text-align: center;
-	vertical-align: middle;
 }
 
-  #mainDiv{
-	  /*
-	  background: rgba(0,0,0,0);
-	  position: absolute;
-	  top: 50%;
-	  left: 50%;
-	  transform: translate(-50%,-50%);
-	  width: 70vmin;
-	  height: 70vmin;
-	  padding: 1vmin;
-	  margin: 0px;
-	  color: white;
-	  border-radius: 2vmin;
-	  */
-  }
-
-  /*
-  #menuContainer{
-	background-color: rgba(255,255,255,1);
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%,-50%);
-	width: 70vmin;
-	height: 70vmin;
-	padding: 1vmin;
-	margin: 0px;
-	border-radius: 2vmin;
-}
-*/
-
-  #threejsContainer{
+#threejsContainer{
 	background: rgba(0,0,0,0);
 	z-index: 10;
-  }
+}
 
-  #menuContainer{
+#menuContainer{
 	background: rgba(255,255,255,0.8);
 	position: absolute;
 	top: 50%;
@@ -85,45 +58,52 @@
 	margin: 0px;
 	border-radius: 2vmin;
 	z-index: 8;
-  }
+}
 
-  #currentParamContainer{
+#currentParamContainer{
 	background: rgba(255,255,255,0.8);
 	position: absolute;
-	top: 10%;
-	left: 10%;
-	transform: translate(-50%,-50%);
-	width: 35vmin;
-	height: 10vmin;
+	top: 0%;
+	left: 0%;
+	width: fit-content;
+	height: fit-content;
 	padding: 1vmin;
 	margin: 0px;
 	border-radius: 2vmin;
 	z-index: 8;
-  }
-
-  h2{
-	font-size: 42px;
-	text-align: center;
-  }
-
-  header {
-	background: 0%;
-	position: absolute;
-	top: 70%;
-	right: 10%;
-
-  }
-  header.top {
-	font-size: 30px;
-	font-weight: bold;
-	
 }
 
-  canvas{
-	  position: absolute;
-	  top: 50%;
-	  left: 50%;
-	  transform: translate(-50%,-50%);
-	  width: 50vmin;
-	  height: 50vmin;
-  }
+#selectContainer{
+	position: absolute;
+	top: 80%;
+	right: 0%;
+	transform: translate(0%,-50%);
+}
+
+h2{
+	font-size: 4vw;
+	text-align: center;
+}
+
+label
+{
+	float:top;
+}
+
+#loading{
+	opacity: 0;
+    transition: all 1s ease-in-out;
+	position: absolute;
+	top: 90%;
+	left: 50%;
+	transform: translate(-50%,-100%);
+}
+
+canvas{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	width: 50vmin;
+	height: 50vmin;
+}

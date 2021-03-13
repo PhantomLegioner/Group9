@@ -1,36 +1,41 @@
 ﻿<!DOCTYPE html>
 <html>
 	<head>
-        <title>Three.js test</title>
-        <link rel="stylesheet" href="main.css"></link>
-        <script type="module" src="main.js"></script>
-        <script type="module" src="grid.js"></script>
-        <script type="module" src="movableobject.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r124/three.js" integrity="sha512-tmdOKTY7I6MOUcCL/9fa4s+BnBCgEuifJImOX46m36+rxVMcgHEPGLVoCXHR6ZvjcKGoVixEiBKE4LcYLnv0Cw==" crossorigin="anonymous"></script>
-      </head>
+    <title>Three.js test</title>
+    <link rel="stylesheet" href="main.css"></link>
+    <script type="module" src="main.js"></script>
+    <script type="module" src="grid.js"></script>
+    <script type="module" src="movableobject.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r124/three.js" integrity="sha512-tmdOKTY7I6MOUcCL/9fa4s+BnBCgEuifJImOX46m36+rxVMcgHEPGLVoCXHR6ZvjcKGoVixEiBKE4LcYLnv0Cw==" crossorigin="anonymous"></script>
+  </head>
   <body>
     <audio controls loop id="backgroundMusic">
       <source src="sounds/BackgroundMusic.mp3" type="audio/mpeg">
     </audio>
+
     <div id="mainContainer">
       <div id="menuContainer">
+          <h2 id="loading">Loading...</h2>
           <canvas id="myCanvas"></canvas>
-          <header class = "top" id ="LevelHeader">Select your level type</header>
-          <select id="level">
-            <option value="Fire" selected>Fire</option>
-            <option value="Ice">Ice</option>
-            <option value="Space">Space</option>
-          </select>
+          <div id="selectContainer">
+            <label for="level">Select level</label>
+            <select id="level">
+              <option value="Fire" selected>Fire</option>
+              <option value="Ice">Ice</option>
+              <option value="Space">Space</option>
+            </select> 
+          </div>
           <button id="btnPlay"></button>
           <button id="btnSave">Highscores</button>
           <h2 id="title"></h2>
           <h3 id="score"></h3>
+          
         </div>
       </div>
       <div id="currentParamContainer">
         <h3 id="currentScore"></h3>
-        <button id="backgroundMusicIcon">Stop background music</button>
-        <button id="soundEffectIcon">Stop sounds effects</button>
+        <button id="backgroundMusicIcon">Play music(1)</button>
+        <button id="soundEffectIcon">Stop effects(2)</button>
       </div>
       <div id="threejsContainer"></div> 
     </div>

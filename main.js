@@ -18,7 +18,7 @@ import {MovingObject} from './movableobject.js';
 
   //player can stop the sounds or the music if he wants
   var sound = true; 
-  var music = true;
+  var music = false;
 
   //Game objects
   var pacman=null;
@@ -172,16 +172,22 @@ class AmbushAI extends TargetAI
 //First shows menu
 function main()
 {
+  //Setup Three.js renderer
   renderer = new THREE.WebGLRenderer();
   renderer.setSize( window.innerWidth, window.innerHeight);
+  var threejsContainer=document.getElementById("threejsContainer");
+  threejsContainer.appendChild(renderer.domElement);
 
+  //Update renderer(and camera) on resize
+	document.body.onresize=updateRenderer;
+
+
+  //Load backgrounds and textures
   loader = new THREE.TextureLoader();
 
-  //Volcano Background
+  //Backgrounds
   bgTextures.push(loader.load('images/Volcano_eruption.jpg'));
-  //Ice Background
   bgTextures.push(loader.load('images/Ice.jpg'));
-  //Space Background
   bgTextures.push(loader.load('images/Space.jpg'));
 
   //Texture for maze floor
@@ -193,9 +199,34 @@ function main()
   //Texture for maze walls
   wallTexture=loader.load('images/Wall.jpg');
 
-  var threejsContainer=document.getElementById("threejsContainer");
-  threejsContainer.appendChild(renderer.domElement);
-	document.body.onresize=updateRenderer;
+  //Bind r-key to play/restart button
+  document.body.addEventListener("keyup", function(event) 
+  {
+    if (event.key == 'r' && state!="play") {
+      event.preventDefault();
+      document.getElementById("btnPlay").click();
+    }
+  });
+
+  //Bind 1-key to music button
+  document.body.addEventListener("keyup", function(event) 
+  {
+    if (event.key == '1') {
+      event.preventDefault();
+      document.getElementById("backgroundMusicIcon").click();
+    }
+  });
+
+  //Bind 2-key to sound effect button
+  document.body.addEventListener("keyup", function(event) 
+  {
+    if (event.key == '2') {
+      event.preventDefault();
+      document.getElementById("soundEffectIcon").click();
+    }
+  });
+
+  //Show menu
 	showMenus();
 }
 
@@ -263,7 +294,7 @@ function initGame()
 
     //Create ghost 
     var ghostModel=createGhost(grid.cubeSize/2,scene,0xFF00FF);
-    var ghost=new MovingObject(ghostModel,grid,5,5,0.04);
+    var ghost=new MovingObject(ghostModel,grid,9,8,0.04);
     ghost.registerCallback((obj,event)=>ghostAI.ghostCallback(obj,event));
     ghostAI.ghostCallback(ghost,null);
     movingObjects.push(ghost);
@@ -272,29 +303,11 @@ function initGame()
 
     //Create ghost 2
     ghostModel=createGhost(grid.cubeSize/2,scene,0x00FF00);
-    ghost=new MovingObject(ghostModel,grid,9,5,0.04);
+    ghost=new MovingObject(ghostModel,grid,9,9,0.04);
     ghost.registerCallback((obj,event)=>ambushAI.ghostCallback(obj,event));
     ambushAI.ghostCallback(ghost,null);
     movingObjects.push(ghost);
     ghosts.push(ghost);
-
-    /*
-    //Create ghost 3
-    ghostModel=createGhost(grid.cubeSize/2,scene);
-    ghost=new MovingObject(ghostModel,grid,5,9,0.04);
-    ghost.registerCallback(ghostCallback);
-    ghostCallback(ghost,null);
-    movingObjects.push(ghost);
-    ghosts.push(ghost);
-
-    //Create ghost 4
-    ghostModel=createGhost(grid.cubeSize/2,scene);
-    ghost=new MovingObject(ghostModel,grid,9,9,0.04);
-    ghost.registerCallback(ghostCallback);
-    ghostCallback(ghost,null);
-    movingObjects.push(ghost);
-    ghosts.push(ghost);
-    */
   
     //Place camera in front of box
     camera.position.z = 5;
@@ -394,6 +407,7 @@ function playSound(sound)
   }
 }
 
+//Stops music
 function stopMusic()
 {
   backgroundMusic.pause();
@@ -558,32 +572,21 @@ function setupControls()
     //Here we read which key was pressed or released and act accordingly
     var setDir = function () 
     {
-			
-        if(state.keys.w || state.keys.ArrowUp)
+        if(state.keys.w)
         {
           pacman.queueDirection("up");
         }
-        if(state.keys.s || state.keys.ArrowDown)
+        if(state.keys.s)
         {
           pacman.queueDirection("down");
         }
-        if(state.keys.a || state.keys.ArrowLeft)
+        if(state.keys.a)
         {
           pacman.queueDirection("left");
         }
-        if(state.keys.d || state.keys.ArrowRight)
+        if(state.keys.d)
         {
           pacman.queueDirection("right");
-        }
-
-        //THIS IS JUST FOR DEBUGGING
-        //YOU CAN ADD WHATEVER INFORMATION YOU WANT TO DISPLAY
-        //FOR TESTING
-        if(state.keys.t)
-        {
-          console.log(pacman.model.position.x+", "+pacman.model.position.y);
-          console.log("Ghosts: "+ghosts.length);
-          console.log(ghosts[0].model.position.x+", "+ghosts[0].model.position.y);
         }
     };
 
@@ -596,9 +599,6 @@ function setupControls()
       
         //React to pressed key
         setDir();
-      
-        //Log key press in console (for debugging)
-        console.log("Keypress: "+e.key);
     };
 
     //Have 'keyHandler' be called when key is pressed down
@@ -608,8 +608,8 @@ function setupControls()
 }
 
 //To show the current score in the left window
-function uploadCurrentScore(currentScore){
-  console.log(currentScore);
+function uploadCurrentScore(currentScore)
+{
   document.getElementById("currentScore").innerHTML="Score : " + currentScore;
 }
 
@@ -633,7 +633,7 @@ function showMenus()
       document.getElementById("LevelHeader");
       selectLevel();
       document.getElementById("title").innerHTML="3D PAC-MAN";
-      document.getElementById("btnPlay").innerHTML="Play";
+      document.getElementById("btnPlay").innerHTML="Play(R)";
       document.getElementById("btnSave").innerHTML="Highscores";
       
       ctx.beginPath();
@@ -647,8 +647,8 @@ function showMenus()
 		{
       document.getElementById("LevelHeader");
       selectLevel();
-      document.getElementById("title").innerHTML="Lost !";
-      document.getElementById("btnPlay").innerHTML="Replay";
+      document.getElementById("title").innerHTML="You lost!";
+      document.getElementById("btnPlay").innerHTML="Replay(R)";
       document.getElementById("btnSave").innerHTML="Save score";
       document.getElementById("score").innerHTML="Your score : " + score ;      
     }
@@ -656,8 +656,8 @@ function showMenus()
 		{
       document.getElementById("LevelHeader");
       selectLevel();
-      document.getElementById("title").innerHTML="Won !";
-      document.getElementById("btnPlay").innerHTML="Replay";
+      document.getElementById("title").innerHTML="You won!";
+      document.getElementById("btnPlay").innerHTML="Replay(R)";
       document.getElementById("btnSave").innerHTML="Save score";
       document.getElementById("score").innerHTML="Your score : " + score ;      
     }
@@ -666,28 +666,28 @@ function showMenus()
 var levelChoice = document.getElementById("level");
 levelChoice.addEventListener('change', selectLevel)
 
-function selectLevel() {
+function selectLevel() 
+{
   var levelText = levelChoice.options[levelChoice.selectedIndex].text;
+  if (levelText == "Fire")
+    {
+      level = 0;
+      console.log("Fire Level selected!")
+    
+    }
+  if(levelText == "Ice")
+    {
+      level = 1;
+      console.log("Ice Level selected!")
+    }
 
-if (levelText == "Fire")
-  {
-    level = 0;
-    console.log("Fire Level selected!")
-   
-  }
-if(levelText == "Ice")
-  {
-    level = 1;
-    console.log("Ice Level selected!")
-  }
-
-if(levelText == "Space")
-  {
-    level = 2;
-    console.log("Space Level selected!")
-  }
-console.log(level, " returned!");
-return level;
+  if(levelText == "Space")
+    {
+      level = 2;
+      console.log("Space Level selected!")
+    }
+  console.log(level, " returned!");
+  return level;
 
 }
 
@@ -698,12 +698,12 @@ function controlSounds()
   if(sound)
   {
     sound = false;
-    document.getElementById("soundEffectIcon").innerHTML="Play sounds effects";
+    document.getElementById("soundEffectIcon").innerHTML="Play effects(2)";
   } 
   else 
   {
     sound = true;
-    document.getElementById("soundEffectIcon").innerHTML="Stop sounds effects";
+    document.getElementById("soundEffectIcon").innerHTML="Stop effects(2)";
   }
 }
 
@@ -715,13 +715,13 @@ function controlMusic()
   {
     music = false;
     stopMusic();
-    document.getElementById("backgroundMusicIcon").innerHTML="Play background music";
+    document.getElementById("backgroundMusicIcon").innerHTML="Play music(1)";
   } 
   else 
   {
     music = true;
     playSound(backgroundMusic);
-    document.getElementById("backgroundMusicIcon").innerHTML="Stop background music";
+    document.getElementById("backgroundMusicIcon").innerHTML="Stop music(1)";
   }
 }
 
@@ -730,11 +730,18 @@ var btnPlay = document.getElementById('btnPlay');
 btnPlay.addEventListener('click',startGame);
 function startGame() 
 {
-  //Destroy previous game and initialize new
-  destroyGame();
-	initGame();
-  let menu=document.getElementById("menuContainer");
-  menu.style.display='none';
+  let loading=document.getElementById("loading");
+  loading.style.opacity=1;
+
+  setTimeout(function(){ 
+    destroyGame();
+    initGame();
+    let menu=document.getElementById("menuContainer");
+    menu.style.display='none';
+    loading.style.opacity=0;
+  }, 10);
+
+  
 }
 
 var btnSave = document.getElementById('btnSave');
