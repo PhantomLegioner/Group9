@@ -39,6 +39,8 @@ import {MovingObject} from './movableobject.js';
   var scene = null;
 	var camera = null;
   var level = null;
+  var levelName = null;
+  var username = null;
 
 //Default "dumb" GhostAI
 class GhostAI
@@ -630,7 +632,6 @@ function showMenus()
     //To show the start menu or the lost menu
     if(state=="menu")
 		{
-      document.getElementById("LevelHeader");
       selectLevel();
       document.getElementById("title").innerHTML="3D PAC-MAN";
       document.getElementById("btnPlay").innerHTML="Play(R)";
@@ -645,26 +646,28 @@ function showMenus()
     } 
 		else if(state=="lost")
 		{
-      document.getElementById("LevelHeader");
       selectLevel();
       document.getElementById("title").innerHTML="You lost!";
       document.getElementById("btnPlay").innerHTML="Replay(R)";
       document.getElementById("btnSave").innerHTML="Save score";
-      document.getElementById("score").innerHTML="Your score : " + score ;      
+      document.getElementById("score").innerHTML="Your score : " + score ;
+      selectUsername();
+      //username = document.getElementById("script_user");
+      //console.log(username);
     }
     else if(state=="won")
 		{
-      document.getElementById("LevelHeader");
       selectLevel();
       document.getElementById("title").innerHTML="You won!";
       document.getElementById("btnPlay").innerHTML="Replay(R)";
       document.getElementById("btnSave").innerHTML="Save score";
-      document.getElementById("score").innerHTML="Your score : " + score ;      
+      document.getElementById("score").innerHTML="Your score : " + score ;
+      selectUsername();     
     }
 }
 
 var levelChoice = document.getElementById("level");
-levelChoice.addEventListener('change', selectLevel)
+levelChoice.addEventListener('change', selectLevel);
 
 function selectLevel() 
 {
@@ -672,22 +675,35 @@ function selectLevel()
   if (levelText == "Fire")
     {
       level = 0;
+      levelName = "Fire";
       console.log("Fire Level selected!")
     
     }
   if(levelText == "Ice")
     {
       level = 1;
+      levelName = "Ice";
       console.log("Ice Level selected!")
     }
 
   if(levelText == "Space")
     {
       level = 2;
+      levelName = "Ice";
       console.log("Space Level selected!")
     }
-  console.log(level, " returned!");
-  return level;
+  console.log(level, levelName, " returned!");
+  return level, levelName;
+
+}
+
+var usernameChoice = document.getElementById("btnUsername");
+//usernameChoice.addEventListener('click', selectUsername);
+
+function selectUsername() 
+{
+  username = usernameChoice.username_selected.value;
+  console.log(username);
 
 }
 

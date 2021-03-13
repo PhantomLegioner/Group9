@@ -31,10 +31,35 @@ button.small{
 	height: 5vmin;
 }
 
+#selectContainer{
+	display:block;
+	position: absolute;
+	top: 80%;
+	right: 5%;
+	transform: translate(0%,-60%);
+}
+
 #level{
 	width: 15vmin;
 	height: 5vmin;
 	font-size: 3vmin;
+	height: 4vmin;
+	font-size: 15px;
+	text-align: center;
+}
+
+#usernameContainer{
+	font-size: 15px;
+	position: absolute;
+	top: 90%;
+	right: 5%;
+	transform: translate(0%,-50%);
+}
+
+#username{
+	width: 15vmin;
+	height: 4vmin;
+	font-size: 15px;
 	text-align: center;
 }
 
@@ -68,14 +93,6 @@ button.small{
 	margin: 0px;
 	border-radius: 2vmin;
 	z-index: 8;
-}
-
-#selectContainer{
-	display:block;
-	position: absolute;
-	top: 80%;
-	right: 5%;
-	transform: translate(0%,-60%);
 }
 
 h2{
