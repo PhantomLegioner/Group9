@@ -696,9 +696,9 @@ function selectLevel()
   return level, levelName;
 
 }
-
-var usernameChoice = document.getElementById("btnUsername");
-//usernameChoice.addEventListener('click', selectUsername);
+//selecting user's username
+var usernameChoice = document.getElementById("user_form");
+usernameChoice.addEventListener('click', selectUsername);
 
 function selectUsername() 
 {
