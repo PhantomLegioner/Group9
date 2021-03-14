@@ -40,6 +40,10 @@ import {MovingObject} from './movableobject.js';
 	var camera = null;
   var level = null;
 
+//GLOBAL VARIABLES END
+
+//GHOST AI CLASSES
+
 //Default "dumb" GhostAI
 class GhostAI
 {
@@ -85,7 +89,6 @@ class TargetAI extends GhostAI
     return [pacman.pos_x, pacman.pos_y];
   }
 
-
   ghostCallback(obj, event)
   {
     if((event==null && obj.dir=="none") || (event!=null))
@@ -93,7 +96,6 @@ class TargetAI extends GhostAI
       
       var targetTile=this.targetTile(obj)
       var targetTileIndex=grid.encodeTile(targetTile[0],targetTile[1]);
-      console.log("Finding path to ("+targetTile[0]+", "+targetTile[1]+")");
       var currentTileIndex=grid.encodeTile(obj.pos_x,obj.pos_y);
       var path=grid.djikstraAlgorithm(obj.pos_x,obj.pos_y);
       var w=pacman.pos_x;
@@ -108,7 +110,6 @@ class TargetAI extends GhostAI
         }
         w=temp[0];
         h=temp[1];
-        console.log("("+w+", "+h+")")
       }
       if(h>obj.pos_y)
       {
@@ -166,10 +167,11 @@ class AmbushAI extends TargetAI
   }
 }
 
-
+//GHOST AI CLASSES END
 
 //This gets called when index.html is loaded
-//First shows menu
+//Sets up renderer, loads images/textures,
+//sets up menus and some menu controls
 function main()
 {
   //Setup Three.js renderer
@@ -180,7 +182,6 @@ function main()
 
   //Update renderer(and camera) on resize
 	document.body.onresize=updateRenderer;
-
 
   //Load backgrounds and textures
   loader = new THREE.TextureLoader();
@@ -233,42 +234,40 @@ function main()
 //If window is rescaled, this event corrects the renderer and camera
 function updateRenderer()
 {
+  //Resize renderer
 	renderer.setSize( window.innerWidth, window.innerHeight);
+
+  //Resize camera if it exists
 	if(camera!=null)
 	{
 		camera.aspect=window.innerWidth/ window.innerHeight;
 		camera.updateProjectionMatrix();
 	}
-	console.log("test");
 }
 
-//Starts the game
+//Starts the game assuming the previous game is cleared
+//Initializes game-loop. Game-logic is in the internal method
+//called animate()
 function initGame()
-{
-    if(music)
-    {
-      playSound(backgroundMusic);
-    }
-    
-    ///INITIALIZING THREE.JS SCENE AND CAMERA
+{    
     //Create scene and camera
     scene = new THREE.Scene();
     scene.background = bgTextures[level];
-    camera = new THREE.PerspectiveCamera( 100, window.innerWidth/ window.innerHeight, 0.1, 1000 );
-    //65, window.innerWidth/ window.innerHeight, 0.1, 1000, Original
+    camera = new THREE.PerspectiveCamera( 100, window.innerWidth/ window.innerHeight, 0.1, 1000);
 
-    ///CREATING OBJECTS TO BE ADDED TO THE SCENE
-  
+    //Place camera
+    camera.position.z = 5;
+    camera.rotation.x += 0.2;
+
     //Create the maze with Grid-class from grid.js
-    floorTexture.repeat.set(10, 10);
-    grid=new Grid(10,10,10,floorTexture,wallTexture)
+    grid=new Grid(10,10,10,floorTexture,wallTexture);
     scene.add(grid.plane)
     for(var i=0;i<grid.walls.length;i++)
     {
         scene.add(grid.walls[i]);
     }
   
-    //Set up lighting
+    //Set up lighting for scene
     {
         const color = 0xFFFFFF;
         const intensity = 1;
@@ -282,24 +281,19 @@ function initGame()
     //Create pacman (see the function createPacman() below)
     var pacmanModel=createPacman(grid.cubeSize/2,scene);
     pacman=new MovingObject(pacmanModel,grid,0,0,0.05);
-
-    //Add pacman to collection of moving objects
     movingObjects.push(pacman);
 
-    //Create 4 ghosts
-    //Perhaps eventually different ghost have different AI
-
+    //Create ghost AIs
     ghostAI=new TargetAI();
     var ambushAI=new AmbushAI();
 
-    //Create ghost 
+    //Create ghost 1
     var ghostModel=createGhost(grid.cubeSize/2,scene,0xFF00FF);
     var ghost=new MovingObject(ghostModel,grid,9,8,0.04);
     ghost.registerCallback((obj,event)=>ghostAI.ghostCallback(obj,event));
     ghostAI.ghostCallback(ghost,null);
     movingObjects.push(ghost);
     ghosts.push(ghost);
-
 
     //Create ghost 2
     ghostModel=createGhost(grid.cubeSize/2,scene,0x00FF00);
@@ -308,10 +302,6 @@ function initGame()
     ambushAI.ghostCallback(ghost,null);
     movingObjects.push(ghost);
     ghosts.push(ghost);
-  
-    //Place camera in front of box
-    camera.position.z = 5;
-		camera.rotation.x += 0.2;
 	
     //Create collectables
     for(var i = 0; i<grid.height; i++)
@@ -329,14 +319,17 @@ function initGame()
     //Set up controls
     setupControls()
 
-    //ANIMATE AND RUN GAME
+    //Reset game state and score
     state="play";
     score=0;
 
-    //Render scene repeatedly
+    //Update scene and render it repeatedly
     const animate = function () 
     {
+      //Update score
       uploadCurrentScore(score);
+
+      //If state is still "play", then update scene
       if(state=="play")
       {
         requestAnimationFrame(animate);
@@ -351,14 +344,20 @@ function initGame()
         camera.position.x=pacman.position.x;
         camera.position.y=pacman.position.y-1;
   
-        //See if a ghost touches pacman
+        //Handle ghosts
         for(var i = 0; i<ghosts.length; i++)
         {
+          //If ghost doesn't have a movement order
+          //then make it move toward pacman
           var ghost=ghosts[i];
           if(ghost.dir=="none")
           {
               ghostAI.ghostCallback(ghost,null);
           }
+
+          //Check if ghost touches pacman
+          //and end game and show "you lost" screen
+          //if it does
           var dist=Math.sqrt(Math.pow(ghost.model.position.x-pacman.model.position.x,2)+
             Math.pow(ghost.model.position.y-pacman.model.position.y,2));
           if(dist<grid.cubeSize/2)
@@ -367,7 +366,6 @@ function initGame()
             {
               playSound(audioClash);
             }
-            stopMusic();
             state="lost";
             showMenus();
           }
@@ -377,20 +375,24 @@ function initGame()
         eatCollectables(pacman.pos_x, pacman.pos_y, scene);
         if(score == 100)
         {
-          stopMusic();
-          playSound(audioWon);
+          if(sound)
+          {
+            playSound(audioWon);
+          }
           state="won";
           showMenus();
         }
 
         //Render scene
-        renderer.render( scene, camera );
+        renderer.render(scene, camera);
       }
     };
     
     //Call animate
     animate();	
 }
+
+//AUDIO
 
 //Clones sound from an Audio object
 //and plays the sound
@@ -413,7 +415,11 @@ function stopMusic()
   backgroundMusic.pause();
 }
 
-//Clear game to restart
+//AUDIO END
+
+//GAME OBJECT MANAGEMENT
+
+//Clear game in order to restart it
 function destroyGame()
 {
   while(movingObjects.length > 0) {
@@ -436,9 +442,8 @@ function destroyGame()
   }
 }
 
-
 //FROM: https://stackoverflow.com/questions/30359830/how-do-i-clear-three-js-scene
-//Clears a scene of geometries and materials
+//Clears a Three.js scene of geometries and materials
 function clearThree(obj)
 {
   while(obj.children.length > 0)
@@ -458,20 +463,31 @@ function clearThree(obj)
     })
     obj.material.dispose()
   }
-}   
+}
+
+//GAME OBJECT MANAGEMENT END
+
+//COLLECTABLES
 
 //Makes pacman eat collectables that it touches
 function eatCollectables(posX, posY, scene)
 {
+  //Find all collectables that touch pacman
+  //Uses a collision model for performance
   var index = allCollectables.findIndex(x => x.positionX === posX && x.positionY === posY);
   var indexChildren = scene.children.findIndex(x => x.id === allCollectables[index].childrenNumber);
+
+  //Handle eaten collectables
   if(!allCollectables[index].wasEaten)
   {
       allCollectables[index].wasEaten = true;
+
+      //Increment score
       score += 1;
       if(sound){
         playSound(audioEat);
       }
+
       //Delete the collectable
       allCollectables[index].wasEaten = true;
       scene.remove(scene.children[indexChildren]);
@@ -484,18 +500,19 @@ function Collectable(wasEaten, positionX, positionY, childrenNumber)
   this.wasEaten = wasEaten;
   this.positionX = positionX;
   this.positionY = positionY;
+ 
   //To know the position in the children list of the scene
   this.childrenNumber = childrenNumber;
 }
 
+//COLLECTABLES END
+
 //MODELS
 
 //This creates the model for pacman
-//You can design pacman here
 function createPacman(size,scene)
 {
     //Get a cylinder mesh
-    //const geometry = new THREE.CylinderGeometry(size/2, size/2, size/2, 32);
     const geometry =  new THREE.SphereGeometry(size/2, 32, 32);
   
     //Get a yellow solid material
@@ -555,6 +572,8 @@ function createCollectables(size,scene)
     return cylinder;
 }
 
+//MODELS END
+
 //CONTROLS
 
 //This makes program react to keypresses
@@ -612,6 +631,8 @@ function uploadCurrentScore(currentScore)
 {
   document.getElementById("currentScore").innerHTML="Score : " + currentScore;
 }
+
+//CONTROLS END
 
 //MENUS
 function showMenus()
@@ -752,6 +773,8 @@ function saveStats()
   destroyGame();
 	console.log("Stats saved.")
 }
+
+//MENUS END
 
 //Call main() when index.html is loaded
 main();

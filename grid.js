@@ -162,9 +162,9 @@ export class Grid
     return [w,h];
   }
 
-
-  //Djikstra's algorithm inspired by the implementation in
+  //Djikstra's algorithm following the Java-implementation in
   //https://www.baeldung.com/java-dijkstra
+  //however we have a different data format for the graph
   djikstraAlgorithm(w,h) 
   {
     let distances = {};
