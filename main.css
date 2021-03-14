@@ -120,7 +120,7 @@ canvas{
   
   .tooltip .tooltiptext {
 	visibility: hidden;
-	width: 120px;
+	width: 60vmin;
 	background-color: black;
 	color: #fff;
 	text-align: center;
