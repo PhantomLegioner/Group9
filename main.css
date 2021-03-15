@@ -31,6 +31,17 @@ button.small{
 	height: 5vmin;
 }
 
+#btnDisplay{
+	background-color: lightblue;
+	cursor: pointer;
+	position: absolute;
+	top: 90%;
+	left: 15%;
+	transform: translate(-50%,-50%);
+	width: 15vmin;
+	height: 5vmin;
+}
+
 #level{
 	width: 15vmin;
 	height: 5vmin;
@@ -58,6 +69,21 @@ button.small{
 	z-index: 8;
 }
 
+#usernameContainer{
+	font-size: 15px;
+	position: absolute;
+	top: 90%;
+	right: 5%;
+	transform: translate(0%,-50%);
+}
+
+#username{
+	width: 15vmin;
+	height: 4vmin;
+	font-size: 15px;
+	text-align: center;
+}
+
 #currentParamContainer{
 	background: rgba(255,255,255,0.8);
 	position: absolute;
@@ -77,6 +103,21 @@ button.small{
 	top: 80%;
 	right: 5%;
 	transform: translate(0%,-60%);
+}
+
+#displayContainer {
+	position: absolute;
+	top: 50%;
+	left: 5%;
+	width: 20vmin;
+	height: 25vmin;
+	z-index: 8;
+  }
+
+#displayDataList {
+	list-style-type: lower-roman;
+	background-color: gray;
+	padding-top: 5%;
 }
 
 h2{
@@ -136,3 +177,33 @@ canvas{
   .tooltip:hover .tooltiptext {
 	visibility: visible;
   }
+
+  /*Displaying results table
+  From: https://medium.com/@vembarrajan/html-css-tricks-scroll-able-table-body-tbody-d23182ae0fbc*/
+  .table{
+    width: 400px;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.table tbody{
+  display:block;
+  width: 100%;
+  overflow: auto;
+  height: 100px;
+}
+
+.table thead tr {
+   display: block;
+}
+
+.table thead {
+  background: black;
+  color:#fff;
+}
+
+.table th, .table td {
+  padding: 5px;
+  text-align: left;
+  width: 200px;
+}

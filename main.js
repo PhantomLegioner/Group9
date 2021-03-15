@@ -39,6 +39,14 @@ import {MovingObject} from './movableobject.js';
   var scene = null;
 	var camera = null;
   var level = null;
+  var levelName = null;
+  var username = null;
+  let db; //database variable
+  const btnSave = document.getElementById("btnSave");
+  btnSave.disabled = false;
+  const listContainer = document.getElementById("displayContainer");
+  listContainer.visibility = false;
+  const list = document.getElementById("displayDataList");
 
 //GLOBAL VARIABLES END
 
@@ -651,11 +659,13 @@ function showMenus()
     //To show the start menu or the lost menu
     if(state=="menu")
 		{
+      btnSave.disabled = true;
       document.getElementById("LevelHeader");
       selectLevel();
       document.getElementById("title").innerHTML="3D PAC-MAN";
       document.getElementById("btnPlay").innerHTML="Play(R)";
-      document.getElementById("btnSave").innerHTML="Highscores";
+      document.getElementById("btnDisplay").innerHTML="High scores";
+      document.getElementById("btnSave").innerHTML="Save data";
       
       ctx.beginPath();
 	    ctx.fillStyle="yellow";
@@ -670,7 +680,7 @@ function showMenus()
       selectLevel();
       document.getElementById("title").innerHTML="You lost!";
       document.getElementById("btnPlay").innerHTML="Replay(R)";
-      document.getElementById("btnSave").innerHTML="Save score";
+      btnSave.disabled = false;
       document.getElementById("score").innerHTML="Your score : " + score ;      
     }
     else if(state=="won")
@@ -679,7 +689,7 @@ function showMenus()
       selectLevel();
       document.getElementById("title").innerHTML="You won!";
       document.getElementById("btnPlay").innerHTML="Replay(R)";
-      document.getElementById("btnSave").innerHTML="Save score";
+      btnSave.disabled = false;
       document.getElementById("score").innerHTML="Your score : " + score ;      
     }
 }
@@ -693,22 +703,36 @@ function selectLevel()
   if (levelText == "Fire")
     {
       level = 0;
+      levelName = "Fire";
       console.log("Fire Level selected!")
     
     }
   if(levelText == "Ice")
     {
       level = 1;
+      levelName = "Ice";
       console.log("Ice Level selected!")
     }
 
   if(levelText == "Space")
     {
       level = 2;
+      levelName = "Space";
       console.log("Space Level selected!")
     }
   console.log(level, " returned!");
-  return level;
+  return level, levelName;
+
+}
+
+//selecting user's username
+var usernameChoice = document.getElementById("user_form");
+usernameChoice.addEventListener('click', selectUsername);
+
+function selectUsername() 
+{
+  username = usernameChoice.username_selected.value;
+  console.log(username);
 
 }
 
@@ -765,16 +789,135 @@ function startGame()
   
 }
 
-var btnSave = document.getElementById('btnSave');
+
+//MENUS END
+
+//Database within the browser
+//Done with the help of Mozilla tutorial from: https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Client-side_storage
+
+window.onload = function() 
+{
+//Open database, version 1
+let request = window.indexedDB.open('scores_db', 1);
+
+// if an error happens when trying to open connection to database
+request.onerror = function() {
+  console.log('Database failed to open');
+};
+
+// Successful connection
+request.onsuccess = function() {
+  console.log('Database was opened succesfully');
+  // Store the opened database object in the db variable.
+  db = request.result;
+  // Showing information from the database
+  //displayScores();
+};
+
+//Setup database initially or upgrade with a bigger version number
+request.onupgradeneeded = function(e) {
+  //get the reference to the opened database
+  let db = e.target.result;
+  //Create table in the database
+  let highScores = db.createObjectStore('scores_os', { keyPath: 'id', autoIncrement: true});
+  //What columns we will have in the table
+  highScores.createIndex('username', 'username', {unique: false});
+  highScores.createIndex('level', 'level', {unique: false});
+  highScores.createIndex('score', 'score', {unique: false});
+  highScores.createIndex('time', 'time', {unique: false});
+
+  console.log('Database setup completed');
+
+}
+
+//Function for adding, saving to the database
 btnSave.addEventListener('click',saveStats);
-function saveStats() 
+function saveStats(e) 
 {
   //Destroy previous game and save information to database
   destroyGame();
+  e.preventDefault();
+  //Store username, level type, score and time of completion into an object
+  let newItem = {username: username, level: levelName, score: score, time: timer };
+  //Transaction to the database for adding
+  let transaction = db.transaction(['scores_os'], 'readwrite');
+  //Call object score that's already added to the database
+  let highScores = transaction.objectStore('scores_os');
+  //request to add newItem
+  let request = highScores.add(newItem);
+  request.onsuccess = function () {
+    console.log('Success');
+  }
+  
+  request.onsuccess = function () {
+    console.log('Success');
+  } 
+  //transaction was completed
+  transaction.oncomplete = function () {
+    console.log('Transaction completed. Your stats were saved!');
+
+    displayScores();
+  }
+
+  transaction.onerror = function() {
+    console.log('Transaction was not opened due an error!');
+  }
+
 	console.log("Stats saved.")
 }
 
-//MENUS END
+var btnDisplay = document.getElementById('btnDisplay');
+btnDisplay.addEventListener('click',displayScores);
+//Displaying scores from the database
+function displayScores() {
+  listContainer.visibility = true;
+
+  while (list.firstChild) {
+    list.removeChild(list.firstChild);
+  }
+
+    let objectStore = db.transaction('scores_os').objectStore('scores_os');
+    objectStore.openCursor().onsuccess = function(e) {
+    let cursor = e.target.result;
+    
+    if (cursor) {
+      const listItem = document.createElement('li');
+      const name = document.createElement('username');
+      const level = document.createElement('leveltype');
+      const score = document.createElement('score');
+      const time = document.createElement('time');
+
+      listItem.appendChild(name);
+      listItem.appendChild(level);
+      listItem.appendChild(score);
+      listItem.appendChild(time);
+
+      list.appendChild(listItem);
+
+      //put data in
+      name.textContent = cursor.value.username + " ";
+      level.textContent = cursor.value.level + " ";
+      score.textContent = cursor.value.score + " ";
+      time.textContent = cursor.value.time + " ";
+
+      //next
+      cursor.continue();
+    }
+    else {
+        if (!list.firstChild) {
+          const listItem = document.createElement('li');
+          listItem.textContent = 'No data is stored!';
+          list.appendChild(listItem);
+        }
+      }
+      
+    }
+    console.log('All data displayed');
+  };
+
+
+};
+
 
 //Call main() when index.html is loaded
 main();
