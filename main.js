@@ -749,6 +749,17 @@ function selectLevel()
 
 }
 
+//Display message for user
+function displayMessage(msg)
+{
+  console.log(msg)
+  message.innerHTML=msg;
+  message.style.opacity=1;
+  setTimeout(function(){
+    message.style.opacity=0;
+  }, 1000);
+}
+
 //selecting user's username
 var usernameChoice = document.getElementById("inputUsername");
 usernameChoice.addEventListener('change', selectUsername);
@@ -759,10 +770,10 @@ function selectUsername()
   if(str.length>0)
   {
     username = usernameChoice.value;
-    console.log("New username: "+username);
+    displayMessage("New username: "+username);
     userNotifications.innerHTML = "New username selected!";
   }
-  else console.log("Invalid username");
+  else displayMessage("Invalid username");
 
   //Unfocus text field
   typing=false;
@@ -818,8 +829,7 @@ var btnPlay = document.getElementById('btnPlay');
 btnPlay.addEventListener('click',startGame);
 function startGame() 
 {
-  //let loading=document.getElementById("loading");
-  //loading.style.opacity=1;
+  message.innerHTML="Loading..."
   message.style.opacity=1;
 
   setTimeout(function(){ 
@@ -835,8 +845,10 @@ function startGame()
 //MENUS END
 
 listContainer.addEventListener('click', hideScores);
+
 //hiding high scores
-function hideScores() {
+function hideScores() 
+{
   listContainer.style.display='none';
 }
 
@@ -886,13 +898,13 @@ function saveStats(e)
 {
   if(scoreSaved)
   {
-    console.log("Game already saved!");
+    displayMessage("Game already saved!");
     return;
   }
 
   if(username==null || username.length<=0)
   {
-    console.log("Invalid username!");
+    displayMessage("Invalid username!");
     return;
   }
   scoreSaved=true;
@@ -912,16 +924,18 @@ function saveStats(e)
     console.log('Success');
   } 
   //transaction was completed
-  transaction.oncomplete = function () {
+  transaction.oncomplete = function () 
+  {
     userNotifications.innerHTML = "Your data was saved successfully!";
-    //alert("Your data was saved!");
-    //displayScores();
+    displayMessage("Score saved!");
   };
-  transaction.onerror = function() {
+  transaction.onerror = function() 
+  {
     alert("An error occurred! Data wasn't saved! properly");
-  }
+  };
 
 }
+
 
 var btnDisplay = document.getElementById('btnDisplay');
 btnDisplay.addEventListener('click',displayScores);
