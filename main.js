@@ -346,10 +346,10 @@ function initGame()
     {
       //Get current time and calculate elapsed time
       timeCurr=new Date();
-      timeElapsed=timeCurr-timeStart;
+      timeElapsed=Math.trunc((timeCurr-timeStart)/1000);
 
       //Update score
-      uploadCurrentScore(score, Math.trunc(timeElapsed/1000));
+      uploadCurrentScore(score, timeElapsed);
 
       //If state is still "play", then update scene
       if(state=="play")
@@ -402,8 +402,6 @@ function initGame()
             playSound(audioWon);
           }
           state="won";
-          var date=new Date();
-          timer=(date.getMilliseconds()-timer)/1000;
           showMenus();
         }
 
@@ -945,10 +943,13 @@ function displayScores()
 
         //put data in
         name.textContent = cursor.value.username + " ";
-        //name.style.fontSize = "10 vmin";
+        name.style.fontSize="2vmin";
         level.textContent = cursor.value.level + " ";
+        level.style.fontSize="2vmin";
         score.textContent = cursor.value.score + " ";
+        score.style.fontSize="2vmin";
         time.textContent = cursor.value.time + " ";
+        time.style.fontSize="2vmin";
 
         //next
         cursor.continue();
