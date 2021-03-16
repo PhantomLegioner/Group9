@@ -131,27 +131,6 @@ button.small{
 	font-size: 5 vw;
 }
 
-#userNotificationLabel {
-	position: absolute;
-	top: 1%;
-	left: 45%;
-	font-size: 1.50vmin;
-	padding-bottom: 1%;
-}
-
-#userNotification {
-	background: lightgray;
-	position: absolute;
-	top: 3%;
-	left: 45%;
-	font-size: 1.2vmin;
-	text-align: center;
-	font-weight: bold;
-	width: fit-content;
-	height: fit-content;
-
-}
-
 h2{
 	font-size: 4vmin;
 	text-align: center;
@@ -213,34 +192,4 @@ canvas{
   
 .tooltip:hover .tooltiptext {
 	visibility: visible;
-}
-
-  /*Displaying results table
-  From: https://medium.com/@vembarrajan/html-css-tricks-scroll-able-table-body-tbody-d23182ae0fbc*/
-  .table{
-    width: 400px;
-    table-layout: fixed;
-    border-collapse: collapse;
-}
-
-.table tbody{
-  display:block;
-  width: 100%;
-  overflow: auto;
-  height: 100px;
-}
-
-.table thead tr {
-   display: block;
-}
-
-.table thead {
-  background: black;
-  color:#fff;
-}
-
-.table th, .table td {
-  padding: 5px;
-  text-align: left;
-  width: 200px;
 }

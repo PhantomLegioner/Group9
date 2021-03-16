@@ -12,10 +12,8 @@ import {MovingObject} from './movableobject.js';
   var timeElapsed=0;
   const message = document.getElementById("loading");
   const menu = document.getElementById("menuContainer");
-  const userNotifications = document.getElementById("userNotification");
 
   //Sounds and background music
-  var AUDIO_CONTEXT;
   var audioEat = new Audio('https://lasonotheque.org/UPLOAD/mp3/0945.mp3');
   var audioClash = new Audio('https://lasonotheque.org/UPLOAD/mp3/2284.mp3');
   var audioWon = document.createElement("audio");
@@ -448,13 +446,16 @@ function stopMusic()
 //Clear game in order to restart it
 function destroyGame()
 {
-  while(movingObjects.length > 0) {
+  while(movingObjects.length > 0) 
+  {
     movingObjects.pop();
   }
-  while(allCollectables.length > 0) {
+  while(allCollectables.length > 0) 
+  {
     allCollectables.pop();
   }
-  while(ghosts.length > 0) {
+  while(ghosts.length > 0) 
+  {
     ghosts.pop();
     console.log(ghosts.length)
   }
@@ -510,7 +511,8 @@ function eatCollectables(posX, posY, scene)
 
       //Increment score
       score += 1;
-      if(sound){
+      if(sound)
+      {
         playSound(audioEat);
       }
 
@@ -770,8 +772,8 @@ function selectUsername()
   if(str.length>0)
   {
     username = usernameChoice.value;
-    displayMessage("New username: "+username);
-    userNotifications.innerHTML = "New username selected!";
+    displayMessage("New username set");
+    document.getElementById("playerName").innerHTML="Your username : " + username ;
   }
   else displayMessage("Invalid username");
 
@@ -926,8 +928,8 @@ function saveStats(e)
   //transaction was completed
   transaction.oncomplete = function () 
   {
-    userNotifications.innerHTML = "Your data was saved successfully!";
     displayMessage("Score saved!");
+    listContainer.style.display="none";
   };
   transaction.onerror = function() 
   {
@@ -935,7 +937,6 @@ function saveStats(e)
   };
 
 }
-
 
 var btnDisplay = document.getElementById('btnDisplay');
 btnDisplay.addEventListener('click',displayScores);
@@ -1011,7 +1012,7 @@ function displayScores()
           time.textContent = entry.time +"s";
           time.style.fontSize="2vmin";
         }
-        userNotifications.innerHTML = "Your data was displayed successfully!";
+        //userNotifications.innerHTML = "Your data was displayed successfully!";
       }
     }   
   }
@@ -1028,6 +1029,8 @@ function deleteData(){
   // report on the success of the transaction completing, when everything is done
   transaction.oncomplete = function() {
     console.log("Transaction completed");
+    scoreSaved=false;
+    btnSave.disabled = false;
   };
 
   transaction.onerror = function() {
@@ -1040,8 +1043,8 @@ function deleteData(){
 
   objectstoreClearRequest.onsuccess = function() {
     //notify user
-    userNotifications.innerHTML = "Your data was deleted successfully!";
-    console.log("Saving successful!");
+    //userNotifications.innerHTML = "Your data was deleted successfully!";
+    displayMessage("Scores deleted!");
   }
   objectstoreClearRequest.onerror = function () {
     alert("An error occurred! Data wasn't deleted properly!");
