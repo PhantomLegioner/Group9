@@ -48,7 +48,7 @@ import {MovingObject} from './movableobject.js';
   const btnSave = document.getElementById("btnSave");
   btnSave.disabled = false;
   const listContainer = document.getElementById("displayContainer");
-  listContainer.visibility = false;
+  listContainer.display = "";
   const list = document.getElementById("displayDataList");
 
 //GLOBAL VARIABLES END
@@ -800,6 +800,12 @@ function startGame()
 
 //MENUS END
 
+listContainer.addEventListener('click', hideScores);
+//hiding high scores
+function hideScores() {
+  listContainer.style.display='none';
+}
+
 //DATABASE
 
 //Database within the browser
@@ -921,6 +927,7 @@ function displayScores()
 
         //put data in
         name.textContent = cursor.value.username + " ";
+        //name.style.fontSize = "10 vmin";
         level.textContent = cursor.value.level + " ";
         score.textContent = cursor.value.score + " ";
         time.textContent = cursor.value.time + " ";

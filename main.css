@@ -114,19 +114,20 @@ button.small{
 }
 
 #displayContainer {
+	background: transparent;
 	overflow-y: scroll;
 	position: absolute;
-	top: 50%;
-	left: 5%;
-	width: 20vmin;
-	height: 25vmin;
+	top: 30%;
+	left: 30%;
+	width: 40vmin;
+	height: 40vmin;
 	z-index: 8;
   }
 
 #displayDataList {
-	list-style-type: lower-roman;
-	background-color: gray;
-	padding-top: 5%;
+	background-color:lightblue;
+	padding: 5%;
+	font-size: 5 vw;
 }
 
 h2{
@@ -137,6 +138,11 @@ h2{
 h3{
 	font-size: 3vmin;
 	text-align: center;
+
+}
+
+h4{
+	font-size: 1 vmin;
 }
 
 label{
