@@ -6,7 +6,9 @@ import {MovingObject} from './movableobject.js';
 	//For the menus and game logic
   var state="menu";
   var score=0;
-  var timer = 0;
+  var timeStart=0;
+  var timeCurr=0;
+  var timeElapsed=0;
 
   //Sounds and background music
   var AUDIO_CONTEXT;
@@ -336,11 +338,18 @@ function initGame()
     state="play";
     score=0;
 
+    //Get starting time
+    timeStart=new Date();
+
     //Update scene and render it repeatedly
     const animate = function () 
     {
+      //Get current time and calculate elapsed time
+      timeCurr=new Date();
+      timeElapsed=timeCurr-timeStart;
+
       //Update score
-      uploadCurrentScore(score);
+      uploadCurrentScore(score, Math.trunc(timeElapsed/1000));
 
       //If state is still "play", then update scene
       if(state=="play")
@@ -393,6 +402,8 @@ function initGame()
             playSound(audioWon);
           }
           state="won";
+          var date=new Date();
+          timer=(date.getMilliseconds()-timer)/1000;
           showMenus();
         }
 
@@ -640,9 +651,9 @@ function setupControls()
 }
 
 //To show the current score in the left window
-function uploadCurrentScore(currentScore)
+function uploadCurrentScore(currentScore, currentElapsed)
 {
-  document.getElementById("currentScore").innerHTML="Score : " + currentScore;
+  document.getElementById("currentScore").innerHTML="Score : " + currentScore+", Time: "+currentElapsed;
 }
 
 //CONTROLS END
@@ -846,15 +857,19 @@ function saveStats(e)
 {
   if(scoreSaved)
   {
-    console.log("Game already saved");
+    console.log("Game already saved!");
     return;
   }
 
+  if(username==null || username.length<=0)
+  {
+    console.log("Invalid username!");
+    return;
+  }
   scoreSaved=true;
   btnSave.disabled = true;
 
   //Destroy previous game and save information to database
-  destroyGame();
   e.preventDefault();
   //Store username, level type, score and time of completion into an object
   let newItem = {username: username, level: levelName, score: score, time: timer };
@@ -897,15 +912,18 @@ function displayScores()
   else
   {
     listContainer.style.display="";
-      while (list.firstChild) {
-        list.removeChild(list.firstChild);
-      }
+    while (list.firstChild) 
+    {
+      list.removeChild(list.firstChild);
+    }
 
-      let objectStore = db.transaction('scores_os').objectStore('scores_os');
-      objectStore.openCursor().onsuccess = function(e) {
+    let objectStore = db.transaction('scores_os').objectStore('scores_os');
+    objectStore.openCursor().onsuccess = function(e) 
+    {
       let cursor = e.target.result;
       
-      if (cursor) {
+      if (cursor) 
+      {
         const listItem = document.createElement('li');
         const name = document.createElement('username');
         const level = document.createElement('leveltype');
@@ -928,14 +946,15 @@ function displayScores()
         //next
         cursor.continue();
       }
-      else {
-          if (!list.firstChild) {
-            const listItem = document.createElement('li');
-            listItem.textContent = 'No data is stored!';
-            list.appendChild(listItem);
-          }
+      else 
+      {
+        if (!list.firstChild) 
+        {
+          const listItem = document.createElement('li');
+          listItem.textContent = 'No data is stored!';
+          list.appendChild(listItem);
         }
-      
+      }
     }
     console.log('All data displayed');
   }
