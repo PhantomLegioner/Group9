@@ -39,6 +39,8 @@ import {MovingObject} from './movableobject.js';
   var scene = null;
 	var camera = null;
   var level = null;
+
+  //Database variables
   var levelName = null;
   var username = null;
   let db; //database variable
@@ -726,14 +728,18 @@ function selectLevel()
 }
 
 //selecting user's username
-var usernameChoice = document.getElementById("user_form");
-usernameChoice.addEventListener('click', selectUsername);
+var usernameChoice = document.getElementById("inputUsername");
+usernameChoice.addEventListener('change', selectUsername);
 
 function selectUsername() 
 {
-  username = usernameChoice.username_selected.value;
-  console.log(username);
-
+  var str=usernameChoice.value;
+  if(str.length>0)
+  {
+    username = usernameChoice.value;
+    console.log("New username: "+username);
+  }
+  else console.log("Invalid username");
 }
 
 var soundEffectIcon = document.getElementById('soundEffectIcon');
@@ -789,8 +795,9 @@ function startGame()
   
 }
 
-
 //MENUS END
+
+//DATABASE
 
 //Database within the browser
 //Done with the help of Mozilla tutorial from: https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Client-side_storage
@@ -868,56 +875,63 @@ function saveStats(e)
 
 var btnDisplay = document.getElementById('btnDisplay');
 btnDisplay.addEventListener('click',displayScores);
+
 //Displaying scores from the database
-function displayScores() {
-  listContainer.visibility = true;
-
-  while (list.firstChild) {
-    list.removeChild(list.firstChild);
+function displayScores() 
+{
+  if(listContainer.style.display=="")
+  {
+    listContainer.style.display="none";
   }
-
-    let objectStore = db.transaction('scores_os').objectStore('scores_os');
-    objectStore.openCursor().onsuccess = function(e) {
-    let cursor = e.target.result;
-    
-    if (cursor) {
-      const listItem = document.createElement('li');
-      const name = document.createElement('username');
-      const level = document.createElement('leveltype');
-      const score = document.createElement('score');
-      const time = document.createElement('time');
-
-      listItem.appendChild(name);
-      listItem.appendChild(level);
-      listItem.appendChild(score);
-      listItem.appendChild(time);
-
-      list.appendChild(listItem);
-
-      //put data in
-      name.textContent = cursor.value.username + " ";
-      level.textContent = cursor.value.level + " ";
-      score.textContent = cursor.value.score + " ";
-      time.textContent = cursor.value.time + " ";
-
-      //next
-      cursor.continue();
-    }
-    else {
-        if (!list.firstChild) {
-          const listItem = document.createElement('li');
-          listItem.textContent = 'No data is stored!';
-          list.appendChild(listItem);
-        }
+  else
+  {
+    listContainer.style.display="";
+      while (list.firstChild) {
+        list.removeChild(list.firstChild);
       }
+
+      let objectStore = db.transaction('scores_os').objectStore('scores_os');
+      objectStore.openCursor().onsuccess = function(e) {
+      let cursor = e.target.result;
+      
+      if (cursor) {
+        const listItem = document.createElement('li');
+        const name = document.createElement('username');
+        const level = document.createElement('leveltype');
+        const score = document.createElement('score');
+        const time = document.createElement('time');
+
+        listItem.appendChild(name);
+        listItem.appendChild(level);
+        listItem.appendChild(score);
+        listItem.appendChild(time);
+
+        list.appendChild(listItem);
+
+        //put data in
+        name.textContent = cursor.value.username + " ";
+        level.textContent = cursor.value.level + " ";
+        score.textContent = cursor.value.score + " ";
+        time.textContent = cursor.value.time + " ";
+
+        //next
+        cursor.continue();
+      }
+      else {
+          if (!list.firstChild) {
+            const listItem = document.createElement('li');
+            listItem.textContent = 'No data is stored!';
+            list.appendChild(listItem);
+          }
+        }
       
     }
     console.log('All data displayed');
-  };
-
-
+  }
+};
 };
 
+//DATABASE END
 
 //Call main() when index.html is loaded
 main();

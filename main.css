@@ -13,7 +13,7 @@ button.small{
 	background-color: lightblue;
 	cursor: pointer;
 	position: absolute;
-	top: 80%;
+	top: 70%;
 	left: 50%;
 	width: 15vmin;
 	height: 5vmin;
@@ -24,7 +24,7 @@ button.small{
 	background-color: lightblue;
 	cursor: pointer;
 	position: absolute;
-	top: 80%;
+	top: 70%;
 	left: 15%;
 	transform: translate(-50%,-50%);
 	width: 15vmin;
@@ -43,6 +43,14 @@ button.small{
 }
 
 #level{
+	width: 15vmin;
+	height: 5vmin;
+	font-size: 3vmin;
+	text-align: center;
+	background-color: lightblue;
+}
+
+#inputUsername{
 	width: 15vmin;
 	height: 5vmin;
 	font-size: 3vmin;
@@ -100,12 +108,13 @@ button.small{
 #selectContainer{
 	display:block;
 	position: absolute;
-	top: 80%;
+	top: 70%;
 	right: 5%;
 	transform: translate(0%,-60%);
 }
 
 #displayContainer {
+	overflow-y: scroll;
 	position: absolute;
 	top: 50%;
 	left: 5%;
@@ -160,7 +169,7 @@ canvas{
 	border-bottom: 1px dotted black;
   }
   
-  .tooltip .tooltiptext {
+.tooltip .tooltiptext {
 	visibility: hidden;
 	width: 60vmin;
 	background-color: black;
@@ -168,15 +177,15 @@ canvas{
 	text-align: center;
 	border-radius: 6px;
 	padding: 5px 0;
-  
+
 	/* Position the tooltip */
 	position: absolute;
 	z-index: 1;
-  }
+}
   
-  .tooltip:hover .tooltiptext {
+.tooltip:hover .tooltiptext {
 	visibility: visible;
-  }
+}
 
   /*Displaying results table
   From: https://medium.com/@vembarrajan/html-css-tricks-scroll-able-table-body-tbody-d23182ae0fbc*/
