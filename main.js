@@ -915,7 +915,7 @@ function saveStats(e)
   transaction.oncomplete = function () {
     userNotifications.innerHTML = "Your data was saved successfully!";
     //alert("Your data was saved!");
-    displayScores();
+    //displayScores();
   };
   transaction.onerror = function() {
     alert("An error occurred! Data wasn't saved! properly");
