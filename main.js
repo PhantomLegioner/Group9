@@ -5,6 +5,7 @@ import {MovingObject} from './movableobject.js';
 
 	//For the menus and game logic
   var state="menu";
+  var typing=false;
   var score=0;
   var timeStart=0;
   var timeCurr=0;
@@ -216,7 +217,7 @@ function main()
   //Bind r-key to play/restart button
   document.body.addEventListener("keyup", function(event) 
   {
-    if (event.key == 'r' && state!="play") {
+    if (event.key == 'r' && state!="play" && !typing) {
       event.preventDefault();
       document.getElementById("btnPlay").click();
     }
@@ -225,7 +226,7 @@ function main()
   //Bind 1-key to music button
   document.body.addEventListener("keyup", function(event) 
   {
-    if (event.key == '1') {
+    if (event.key == '1' && !typing) {
       event.preventDefault();
       document.getElementById("backgroundMusicIcon").click();
     }
@@ -234,7 +235,7 @@ function main()
   //Bind 2-key to sound effect button
   document.body.addEventListener("keyup", function(event) 
   {
-    if (event.key == '2') {
+    if (event.key == '2' && !typing) {
       event.preventDefault();
       document.getElementById("soundEffectIcon").click();
     }
@@ -752,7 +753,21 @@ function selectUsername()
     console.log("New username: "+username);
   }
   else console.log("Invalid username");
+
+  //Unfocus text field
+  typing=false;
+  usernameChoice.blur();
 }
+
+//Prevent key events when typing in text field
+usernameChoice.addEventListener('focusin',function(){
+  typing=true;
+});
+
+//Prevent key events when typing in text field
+usernameChoice.addEventListener('focusout',function(){
+  typing=false;
+});
 
 var soundEffectIcon = document.getElementById('soundEffectIcon');
 soundEffectIcon.addEventListener('click', controlSounds);
