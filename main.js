@@ -10,6 +10,9 @@ import {MovingObject} from './movableobject.js';
   var timeStart=0;
   var timeCurr=0;
   var timeElapsed=0;
+  const message = document.getElementById("loading");
+  const menu = document.getElementById("menuContainer");
+  const userNotifications = document.getElementById("userNotification");
 
   //Sounds and background music
   var AUDIO_CONTEXT;
@@ -668,7 +671,7 @@ function showMenus()
     canvas.width=SIZE;
 	  canvas.height=SIZE; 
 
-    let menu=document.getElementById("menuContainer");
+    //let menu=document.getElementById("menuContainer");
     menu.style.display='';
   
     //To show the start menu or the lost menu
@@ -757,6 +760,7 @@ function selectUsername()
   {
     username = usernameChoice.value;
     console.log("New username: "+username);
+    userNotifications.innerHTML = "New username selected!";
   }
   else console.log("Invalid username");
 
@@ -814,15 +818,15 @@ var btnPlay = document.getElementById('btnPlay');
 btnPlay.addEventListener('click',startGame);
 function startGame() 
 {
-  let loading=document.getElementById("loading");
-  loading.style.opacity=1;
+  //let loading=document.getElementById("loading");
+  //loading.style.opacity=1;
+  message.style.opacity=1;
 
   setTimeout(function(){ 
     destroyGame();
     initGame();
-    let menu=document.getElementById("menuContainer");
     menu.style.display='none';
-    loading.style.opacity=0;
+    message.style.opacity=0;
   }, 10);
 
   
@@ -906,22 +910,17 @@ function saveStats(e)
   let request = highScores.add(newItem);
   request.onsuccess = function () {
     console.log('Success');
-  }
-  
-  request.onsuccess = function () {
-    console.log('Success');
   } 
   //transaction was completed
   transaction.oncomplete = function () {
-    console.log('Transaction completed. Your stats were saved!');
+    userNotifications.innerHTML = "Your data was saved successfully!";
+    //alert("Your data was saved!");
     displayScores();
-  }
-
+  };
   transaction.onerror = function() {
-    console.log('Transaction was not opened due an error!');
+    alert("An error occurred! Data wasn't saved! properly");
   }
 
-	console.log("Stats saved.")
 }
 
 var btnDisplay = document.getElementById('btnDisplay');
@@ -998,7 +997,7 @@ function displayScores()
           time.textContent = entry.time +"s";
           time.style.fontSize="2vmin";
         }
-        console.log('All data displayed');
+        userNotifications.innerHTML = "Your data was displayed successfully!";
       }
     }   
   }
@@ -1018,7 +1017,7 @@ function deleteData(){
   };
 
   transaction.onerror = function() {
-    console.log("Transaction not opened due to error: " + transaction.error);
+    alert("Transaction not opened due to error: " + transaction.error);
   };
 
   var objectstore = transaction.objectStore("scores_os");
@@ -1027,18 +1026,18 @@ function deleteData(){
 
   objectstoreClearRequest.onsuccess = function() {
     //notify user
-    document.getElementById("loading").innerHTML="All data cleared";
+    userNotifications.innerHTML = "Your data was deleted successfully!";
     console.log("Saving successful!");
   }
   objectstoreClearRequest.onerror = function () {
-    console.log("Clearing the database failed!");
+    alert("An error occurred! Data wasn't deleted properly!");
   }
 }
 
 else {
   console.log("Clearing database cancelled");
   //notify user
-
+  userNotifications.innerHTML = "Clearing database cancelled";
   //document.getElementById("loading").innerHTML="Cancelled";
 }
 
