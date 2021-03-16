@@ -43,6 +43,7 @@ import {MovingObject} from './movableobject.js';
   //Database variables
   var levelName = null;
   var username = null;
+  var scoreSaved=false;
   let db; //database variable
   const btnSave = document.getElementById("btnSave");
   btnSave.disabled = false;
@@ -260,6 +261,8 @@ function updateRenderer()
 //called animate()
 function initGame()
 {    
+    scoreSaved=false;
+
     //Create scene and camera
     scene = new THREE.Scene();
     scene.background = bgTextures[level];
@@ -841,6 +844,15 @@ request.onupgradeneeded = function(e) {
 btnSave.addEventListener('click',saveStats);
 function saveStats(e) 
 {
+  if(scoreSaved)
+  {
+    console.log("Game already saved");
+    return;
+  }
+
+  scoreSaved=true;
+  btnSave.disabled = true;
+
   //Destroy previous game and save information to database
   destroyGame();
   e.preventDefault();
@@ -862,7 +874,6 @@ function saveStats(e)
   //transaction was completed
   transaction.oncomplete = function () {
     console.log('Transaction completed. Your stats were saved!');
-
     displayScores();
   }
 
