@@ -31,6 +31,18 @@ button.small{
 	height: 5vmin;
 }
 
+#btnClose{
+	background-color: rgb(177, 72, 115);
+	font-weight: bold;
+	cursor: pointer;
+	position: absolute;
+	top: 5%;
+	left: 94%;
+	transform: translate(-50%,-50%);
+	width: 5vmin;
+	height: 5vmin;
+}
+
 #btnDisplay{
 	background-color: lightblue;
 	cursor: pointer;

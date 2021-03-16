@@ -43,6 +43,7 @@ import {MovingObject} from './movableobject.js';
   var scene = null;
 	var camera = null;
   var level = null;
+  var speed = 0;
 
   //Database variables
   var levelName = null;
@@ -306,7 +307,7 @@ function initGame()
 
     //Create ghost 1
     var ghostModel=createGhost(grid.cubeSize/2,scene,0xFF00FF);
-    var ghost=new MovingObject(ghostModel,grid,9,8,0.04);
+    var ghost=new MovingObject(ghostModel,grid,9,8,speed);
     ghost.registerCallback((obj,event)=>ghostAI.ghostCallback(obj,event));
     ghostAI.ghostCallback(ghost,null);
     movingObjects.push(ghost);
@@ -314,7 +315,7 @@ function initGame()
 
     //Create ghost 2
     ghostModel=createGhost(grid.cubeSize/2,scene,0x00FF00);
-    ghost=new MovingObject(ghostModel,grid,9,9,0.04);
+    ghost=new MovingObject(ghostModel,grid,9,9,speed); //0.04 original
     ghost.registerCallback((obj,event)=>ambushAI.ghostCallback(obj,event));
     ambushAI.ghostCallback(ghost,null);
     movingObjects.push(ghost);
@@ -725,29 +726,35 @@ levelChoice.addEventListener('change', selectLevel)
 
 function selectLevel() 
 {
-  var levelText = levelChoice.options[levelChoice.selectedIndex].text;
+  var levelText = levelChoice.options[levelChoice.selectedIndex].value;
   if (levelText == "Fire")
     {
       level = 0;
       levelName = "Fire";
+      speed = 0.04;
       console.log("Fire Level selected!")
+      displayMessage("Fire Level selected!");
     
     }
   if(levelText == "Ice")
     {
       level = 1;
       levelName = "Ice";
+      speed = 0.03;
       console.log("Ice Level selected!")
+      displayMessage("Ice Level selected!");
     }
 
   if(levelText == "Space")
     {
       level = 2;
       levelName = "Space";
+      speed = 0.035;
       console.log("Space Level selected!")
+      displayMessage("Space Level selected!");
     }
   console.log(level, " returned!");
-  return level, levelName;
+  return level, levelName, speed;
 
 }
 
@@ -846,9 +853,11 @@ function startGame()
 
 //MENUS END
 
-listContainer.addEventListener('click', hideScores);
-
 //hiding high scores
+var btnClose = document.getElementById('btnClose');;
+btnClose.addEventListener('click', hideScores);
+
+
 function hideScores() 
 {
   listContainer.style.display='none';
@@ -1043,7 +1052,6 @@ function deleteData(){
 
   objectstoreClearRequest.onsuccess = function() {
     //notify user
-    //userNotifications.innerHTML = "Your data was deleted successfully!";
     displayMessage("Scores deleted!");
   }
   objectstoreClearRequest.onerror = function () {
@@ -1053,9 +1061,7 @@ function deleteData(){
 
 else {
   console.log("Clearing database cancelled");
-  //notify user
-  userNotifications.innerHTML = "Clearing database cancelled";
-  //document.getElementById("loading").innerHTML="Cancelled";
+
 }
 
 }
