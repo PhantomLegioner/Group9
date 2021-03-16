@@ -920,7 +920,7 @@ function displayScores()
     {
       list.removeChild(list.firstChild);
     }
-
+    var entries=[];
     let objectStore = db.transaction('scores_os').objectStore('scores_os');
     objectStore.openCursor().onsuccess = function(e) 
     {
@@ -928,43 +928,58 @@ function displayScores()
       
       if (cursor) 
       {
-        const listItem = document.createElement('li');
-        const name = document.createElement('username');
-        const level = document.createElement('leveltype');
-        const score = document.createElement('score');
-        const time = document.createElement('time');
+        var entry={
+          username : cursor.value.username,
+          level : cursor.value.level,
+          score : cursor.value.score,
+          time : cursor.value.time,
+        };
 
-        listItem.appendChild(name);
-        listItem.appendChild(level);
-        listItem.appendChild(score);
-        listItem.appendChild(time);
-
-        list.appendChild(listItem);
-
-        //put data in
-        name.textContent = cursor.value.username + " ";
-        name.style.fontSize="2vmin";
-        level.textContent = cursor.value.level + " ";
-        level.style.fontSize="2vmin";
-        score.textContent = cursor.value.score + " ";
-        score.style.fontSize="2vmin";
-        time.textContent = cursor.value.time + " ";
-        time.style.fontSize="2vmin";
+        entries.push(entry);
 
         //next
         cursor.continue();
       }
       else 
       {
-        if (!list.firstChild) 
+        //Sort entries w.r.t score and time
+        entries.sort(function(a,b){
+          var diff=b.score-a.score;
+          if(diff!=0) return b.score-a.score;
+          else return a.time-b.time;
+        });
+
+        //Display entries
+        for(var i=0; i<entries.length; i++)
         {
+          var entry=entries[i];
+
           const listItem = document.createElement('li');
-          listItem.textContent = 'No data is stored!';
+          const name = document.createElement('username');
+          const level = document.createElement('leveltype');
+          const score = document.createElement('score');
+          const time = document.createElement('time');
+  
+          listItem.appendChild(name);
+          listItem.appendChild(level);
+          listItem.appendChild(score);
+          listItem.appendChild(time);
+  
           list.appendChild(listItem);
+  
+          //put data in
+          name.textContent = entry.username + "\t | \t";
+          name.style.fontSize="2vmin";
+          level.textContent = entry.level + "\t | \t";
+          level.style.fontSize="2vmin";
+          score.textContent = entry.score + "p\t | \t";
+          score.style.fontSize="2vmin";
+          time.textContent = entry.time +"s";
+          time.style.fontSize="2vmin";
         }
+        console.log('All data displayed');
       }
-    }
-    console.log('All data displayed');
+    }   
   }
 };
 };
