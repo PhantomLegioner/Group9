@@ -696,7 +696,10 @@ function showMenus()
       document.getElementById("title").innerHTML="You lost!";
       document.getElementById("btnPlay").innerHTML="Replay(R)";
       btnSave.disabled = false;
-      document.getElementById("score").innerHTML="Your score : " + score ;      
+      document.getElementById("playerName").innerHTML="Your username : " + username ;
+      document.getElementById("levelType").innerHTML="Your level : " + levelName ;
+      document.getElementById("score").innerHTML="Your score : " + score + " points"; 
+      document.getElementById("seconds").innerHTML="Your time : " +  timeElapsed + " seconds";      
     }
     else if(state=="won")
 		{
@@ -705,7 +708,10 @@ function showMenus()
       document.getElementById("title").innerHTML="You won!";
       document.getElementById("btnPlay").innerHTML="Replay(R)";
       btnSave.disabled = false;
-      document.getElementById("score").innerHTML="Your score : " + score ;      
+      document.getElementById("playerName").innerHTML="Your username : " + username ;
+      document.getElementById("levelType").innerHTML="Your level : " + levelName ;
+      document.getElementById("score").innerHTML="Your score : " + score + " points"; 
+      document.getElementById("seconds").innerHTML="Your time : " +  timeElapsed + " seconds";      
     }
 }
 
@@ -997,6 +1003,48 @@ function displayScores()
     }   
   }
 };
+
+//Delete data
+var btndel = document.getElementById('btnDelete');
+btndel.addEventListener('click',deleteData)
+function deleteData(){
+  var choice = confirm("Note! Clicking OK will delete all data!");
+  if (choice == true) {
+
+  let transaction = db.transaction(['scores_os'], 'readwrite');
+  // report on the success of the transaction completing, when everything is done
+  transaction.oncomplete = function() {
+    console.log("Transaction completed");
+  };
+
+  transaction.onerror = function() {
+    console.log("Transaction not opened due to error: " + transaction.error);
+  };
+
+  var objectstore = transaction.objectStore("scores_os");
+
+  var objectstoreClearRequest = objectstore.clear();
+
+  objectstoreClearRequest.onsuccess = function() {
+    //notify user
+    document.getElementById("loading").innerHTML="All data cleared";
+    console.log("Saving successful!");
+  }
+  objectstoreClearRequest.onerror = function () {
+    console.log("Clearing the database failed!");
+  }
+}
+
+else {
+  console.log("Clearing database cancelled");
+  //notify user
+
+  //document.getElementById("loading").innerHTML="Cancelled";
+}
+
+}
+
+
 };
 
 //DATABASE END

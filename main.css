@@ -114,7 +114,7 @@ button.small{
 }
 
 #displayContainer {
-	background: transparent;
+	background: lightgray;
 	overflow-y: scroll;
 	position: absolute;
 	top: 30%;
