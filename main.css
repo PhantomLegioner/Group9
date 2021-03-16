@@ -125,6 +125,7 @@ button.small{
   }
 
 #displayDataList {
+	list-style-position: inside;
 	background-color:lightblue;
 	padding: 5%;
 	font-size: 5 vw;
