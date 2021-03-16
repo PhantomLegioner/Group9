@@ -878,7 +878,7 @@ function saveStats(e)
   //Destroy previous game and save information to database
   e.preventDefault();
   //Store username, level type, score and time of completion into an object
-  let newItem = {username: username, level: levelName, score: score, time: timer };
+  let newItem = {username: username, level: levelName, score: score, time: timeElapsed };
   //Transaction to the database for adding
   let transaction = db.transaction(['scores_os'], 'readwrite');
   //Call object score that's already added to the database
