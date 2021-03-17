@@ -919,6 +919,7 @@ window.onload = function()
 let request = window.indexedDB.open('scores_db', 1);
 
 // if an error happens when trying to open connection to database
+// display error message.
 request.onerror = function() {
   displayMessage('Database failed to open');
 };
@@ -946,26 +947,30 @@ request.onupgradeneeded = function(e)
 
 }
 
-//Function for saving to the database
+/** 
+ * Function stores username, level type, score and time taken for the
+ * game to end into scores_os objectstore (table).
+ */
 btnSave.addEventListener('click',saveStats);
 function saveStats(e) 
 {
+  //check if game can be saved because we don't want the same one multiple times
   if(scoreSaved)
   {
     displayMessage("Game already saved!");
     return;
   }
-
+  // we don't want null or empty usernames so forbid those and ask for new.
   if(username==null || username.length<=0)
   {
     displayMessage("Invalid username!");
     return;
   }
-
+  //disabling saving same game again
   scoreSaved=true;
   btnSave.disabled = true;
 
-  //save information to database
+  //the saving itself
   e.preventDefault();
 
   //Store username, level type, score and time of completion into an object
@@ -974,14 +979,13 @@ function saveStats(e)
   //Transaction to the database for adding
   let transaction = db.transaction(['scores_os'], 'readwrite');
 
-  //Call object score that's already added to the database
+  //select scores_os for the transaction
   let highScores = transaction.objectStore('scores_os');
 
-  //request to add newItem
+  //Add values into the data upon successful request
   let request = highScores.add(newItem);
   request.onsuccess = function () 
   {
-    //console.log('Success');
   } 
 
   //transaction was completed
@@ -990,7 +994,7 @@ function saveStats(e)
     displayMessage("Score saved!");
     listContainer.style.display="none";
   };
-
+  //error occurred with the transaction, give user big alert
   transaction.onerror = function() 
   {
     alert("An error occurred! Data wasn't saved! properly");
@@ -1001,7 +1005,11 @@ function saveStats(e)
 var btnDisplay = document.getElementById('btnDisplay');
 btnDisplay.addEventListener('click',displayScores);
 
-//Displaying scores from the database
+/** 
+ * Function loads results from database into an array, array is sorted
+ * based on score first, and if equal score, based on time.
+ * Results are then displayed with the use of an ordered list.
+ */
 function displayScores() 
 {
   if(listContainer.style.display=="")
@@ -1079,21 +1087,23 @@ function displayScores()
   }
 };
 
-//Delete data
+/** 
+ * Function clears the whole database after confirmation from the user.
+ * If the user cancels the clearing, they will be notified of successful cancellation.
+ */
 var btndel = document.getElementById('btnDelete');
 btndel.addEventListener('click',deleteData)
 function deleteData()
 {
-  var choice = confirm("Note! Clicking OK will delete all data!");
+  var choice = confirm("Note! Clicking OK will delete all data permanently!");
   if (choice == true) 
   {
 
     let transaction = db.transaction(['scores_os'], 'readwrite');
 
-    // report on the success of the transaction completing, when everything is done
+    // change scoreSaved and save button to be usable if we aren't in the main menu
     transaction.oncomplete = function() 
     {
-      //console.log("Transaction completed");
       listContainer.style.display="none";
       if(state!="menu")
       {
@@ -1101,29 +1111,31 @@ function deleteData()
         btnSave.disabled=false;
       }
     };
-
+    //alert if transactions fails, so user can know and look for a fix
     transaction.onerror = function() 
     {
-      alert("Transaction not opened due to error: " + transaction.error);
+      alert("Transaction not completed due to error: " + transaction.error);
     };
-
+    //add the correct table to the transaction and clear it.
     var objectstore = transaction.objectStore("scores_os");
 
     var objectstoreClearRequest = objectstore.clear();
 
     objectstoreClearRequest.onsuccess = function() 
     {
-      //notify user
-      displayMessage("Scores deleted!");
+      //notify user upon successful clear
+      displayMessage("Database cleared!");
     }
+    //alert if operation fails, so user can know and look for a fix
     objectstoreClearRequest.onerror = function () 
     {
-      alert("An error occurred! Data wasn't deleted properly!");
+      alert("An error occurred! Data wasn't cleared properly!");
   }
 }
+//notification upon cancelling clearing of the database
 else 
 {
-  console.log("Clearing database cancelled");
+  displayMessage("Clearing cancelled");
 }
 
 }
