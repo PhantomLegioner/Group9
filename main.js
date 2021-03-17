@@ -216,12 +216,21 @@ function main()
   //Texture for maze walls
   wallTexture=loader.load('images/Wall.jpg');
 
-  //Bind r-key to play/restart button
+  //Bind R-key to play/restart button
   document.body.addEventListener("keyup", function(event) 
   {
     if (event.key == 'r' && state!="play" && !typing) {
       event.preventDefault();
       document.getElementById("btnPlay").click();
+    }
+  });
+
+  //Bind H-key to displaying high scores button
+  document.body.addEventListener("keyup", function(event) 
+  {
+    if (event.key == 'h' && state!="play" && !typing) {
+      event.preventDefault();
+      document.getElementById("btnDisplay").click();
     }
   });
 
@@ -664,30 +673,35 @@ function uploadCurrentScore(currentScore, currentElapsed)
 //CONTROLS END
 
 //MENUS
+/** 
+ * Function sets up canvas in 2D and shows start, lost or win menu based on state value
+ * @ var state  determines which menu to show
+ */
 function showMenus()
 {
+    // Set the size value for canvas width and height
     var SIZE=1000;
   
-    //Show the menus
+    //call myCanvas from index.html and set its sizes
     let canvas=document.getElementById("myCanvas");
     let ctx=canvas.getContext("2d");
     canvas.width=SIZE;
 	  canvas.height=SIZE; 
-
-    //let menu=document.getElementById("menuContainer");
+    //Display menu
     menu.style.display='';
   
-    //To show the start menu or the lost menu
+     
+    //Shows the menu and information related to the menu in question
+
     if(state=="menu")
 		{
       btnSave.disabled = true;
-      document.getElementById("LevelHeader");
       selectLevel();
       document.getElementById("title").innerHTML="3D PAC-MAN";
       document.getElementById("btnPlay").innerHTML="Play(R)";
-      document.getElementById("btnDisplay").innerHTML="High scores";
+      document.getElementById("btnDisplay").innerHTML="Scores(H)";
       document.getElementById("btnSave").innerHTML="Save data";
-      
+      //Draws a pacman on the start page
       ctx.beginPath();
 	    ctx.fillStyle="yellow";
       ctx.lineWidth=10;
@@ -697,7 +711,6 @@ function showMenus()
     } 
 		else if(state=="lost")
 		{
-      document.getElementById("LevelHeader");
       selectLevel();
       document.getElementById("title").innerHTML="You lost!";
       document.getElementById("btnPlay").innerHTML="Replay(R)";
@@ -709,7 +722,6 @@ function showMenus()
     }
     else if(state=="won")
 		{
-      document.getElementById("LevelHeader");
       selectLevel();
       document.getElementById("title").innerHTML="You won!";
       document.getElementById("btnPlay").innerHTML="Replay(R)";
@@ -721,6 +733,16 @@ function showMenus()
     }
 }
 
+//FUNCTIONS
+
+/** 
+ * Function selects the level background, ghosts speeds and level name (for displaying to user)
+ * based on the user's selection from the drop down menu on the start menu.
+ * The fire level has the fastest ghosts (harderst), space is in the middle (normal) and
+ * ice level (easy) has the slowest ghosts.
+ * Also calls the displayMessage function to show user a level has been selected
+ * @ return level, levelName and speed
+ */
 var levelChoice = document.getElementById("level");
 levelChoice.addEventListener('change', selectLevel)
 
@@ -732,7 +754,6 @@ function selectLevel()
       level = 0;
       levelName = "Fire";
       speed = 0.04;
-      console.log("Fire Level selected!")
       displayMessage("Fire Level selected!");
     
     }
@@ -741,7 +762,6 @@ function selectLevel()
       level = 1;
       levelName = "Ice";
       speed = 0.03;
-      console.log("Ice Level selected!")
       displayMessage("Ice Level selected!");
     }
 
@@ -750,18 +770,15 @@ function selectLevel()
       level = 2;
       levelName = "Space";
       speed = 0.035;
-      console.log("Space Level selected!")
       displayMessage("Space Level selected!");
     }
-  console.log(level, " returned!");
   return level, levelName, speed;
 
 }
 
-//Display message for user
+//Display message for user for 1 second
 function displayMessage(msg)
 {
-  console.log(msg)
   message.innerHTML=msg;
   message.style.opacity=1;
   setTimeout(function(){
@@ -769,7 +786,13 @@ function displayMessage(msg)
   }, 1000);
 }
 
-//selecting user's username
+/** 
+ * Function selects the username from input field on the main menu.
+ * Username is accepted if it's longer than 0 characters.
+ * User is notified of changed username via displayMessage and username is shown.
+ * Other keyevents are prevented when typing in the field to stop other game functions
+ * programmed to buttons from triggering.
+ */
 var usernameChoice = document.getElementById("inputUsername");
 usernameChoice.addEventListener('change', selectUsername);
 
@@ -798,6 +821,20 @@ usernameChoice.addEventListener('focusin',function(){
 usernameChoice.addEventListener('focusout',function(){
   typing=false;
 });
+
+
+//Hide high scores window
+var btnClose = document.getElementById('btnClose');;
+btnClose.addEventListener('click', hideScores);
+
+
+function hideScores() 
+{
+  listContainer.style.display='none';
+}
+
+//MUSIC FUNCTIONS
+
 
 var soundEffectIcon = document.getElementById('soundEffectIcon');
 soundEffectIcon.addEventListener('click', controlSounds);
@@ -853,16 +890,6 @@ function startGame()
 
 //MENUS END
 
-//hiding high scores
-var btnClose = document.getElementById('btnClose');;
-btnClose.addEventListener('click', hideScores);
-
-
-function hideScores() 
-{
-  listContainer.style.display='none';
-}
-
 //DATABASE
 
 //Database within the browser
@@ -875,16 +902,13 @@ let request = window.indexedDB.open('scores_db', 1);
 
 // if an error happens when trying to open connection to database
 request.onerror = function() {
-  console.log('Database failed to open');
+  displayMessage('Database failed to open');
 };
 
 // Successful connection
 request.onsuccess = function() {
-  console.log('Database was opened succesfully');
   // Store the opened database object in the db variable.
   db = request.result;
-  // Showing information from the database
-  //displayScores();
 };
 
 //Setup database initially or upgrade with a bigger version number
@@ -899,11 +923,9 @@ request.onupgradeneeded = function(e) {
   highScores.createIndex('score', 'score', {unique: false});
   highScores.createIndex('time', 'time', {unique: false});
 
-  console.log('Database setup completed');
-
 }
 
-//Function for adding, saving to the database
+//Function for saving to the database
 btnSave.addEventListener('click',saveStats);
 function saveStats(e) 
 {
@@ -921,7 +943,7 @@ function saveStats(e)
   scoreSaved=true;
   btnSave.disabled = true;
 
-  //Destroy previous game and save information to database
+  //save information to database
   e.preventDefault();
   //Store username, level type, score and time of completion into an object
   let newItem = {username: username, level: levelName, score: score, time: timeElapsed };
