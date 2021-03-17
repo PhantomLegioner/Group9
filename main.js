@@ -704,12 +704,29 @@ function showMenus()
       document.getElementById("btnDisplay").innerHTML="Scores(H)";
       document.getElementById("btnSave").innerHTML="Save data";
       //Draws a pacman on the start page
+      
       ctx.beginPath();
 	    ctx.fillStyle="yellow";
       ctx.lineWidth=10;
-	    ctx.arc(500, 400, 150, 0, Math.PI * 2);	
+	    ctx.arc(500, 400, 150, Math.PI * 0.25, Math.PI * 1.75);	
+
+      // The mouth
+      // A line from the end of the arc to the centre
+      ctx.lineTo(500, 400);
+
+      // A line from the centre of the arc to the start
+      ctx.closePath();
+
 	    ctx.stroke();
 	    ctx.fill();
+      
+      // Draw the eye
+      ctx.beginPath();
+      ctx.arc(500, 320, 20, 0, 2 * Math.PI, false);
+      ctx.fillStyle = "rgb(0, 0, 0)";
+      ctx.fill();
+
+
     } 
 		else if(state=="lost")
 		{
