@@ -158,7 +158,7 @@ class AmbushAI extends TargetAI
     var target_x=pacman.pos_x;
     var target_y=pacman.pos_y;
     var dist=Math.abs(target_x-obj.pos_x)+Math.abs(target_y-obj.pos_y)
-    if(dist>=2)
+    if(dist>=3)
     {
       var dir=pacman.dir;
       if(dir=="up")
