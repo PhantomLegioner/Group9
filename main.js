@@ -10,6 +10,7 @@ import {MovingObject} from './movableobject.js';
   var timeStart=0;
   var timeCurr=0;
   var timeElapsed=0;
+  var levelPlayed="none";
   const message = document.getElementById("loading");
   const menu = document.getElementById("menuContainer");
 
@@ -392,6 +393,7 @@ function initGame()
               playSound(audioClash);
             }
             state="lost";
+            levelPlayed=levelName;
             showMenus();
           }
         }
@@ -844,8 +846,6 @@ function startGame()
     menu.style.display='none';
     message.style.opacity=0;
   }, 10);
-
-  
 }
 
 //MENUS END
@@ -927,7 +927,7 @@ function saveStats(e)
   e.preventDefault();
 
   //Store username, level type, score and time of completion into an object
-  let newItem = {username: username, level: levelName, score: score, time: timeElapsed };
+  let newItem = {username: username, level: levelPlayed, score: score, time: timeElapsed };
 
   //Transaction to the database for adding
   let transaction = db.transaction(['scores_os'], 'readwrite');
