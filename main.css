@@ -1,8 +1,14 @@
 ﻿button{
+	background-color: lightblue;
 	min-width: fit-content;
 	min-height: fit-content;
 	text-align: center;
 	font-size: 3vmin;
+	border-radius: 1vmin;
+	transition: 0.3s;
+}
+button:hover:enabled{
+    background-color: rgb(77, 95, 100);
 }
 
 button.small{
@@ -10,7 +16,6 @@ button.small{
 }
 
 #btnPlay{
-	background-color: lightblue;
 	cursor: pointer;
 	position: absolute;
 	top: 70%;
@@ -21,7 +26,6 @@ button.small{
 }
 
 #btnSave{
-	background-color: lightblue;
 	cursor: pointer;
 	position: absolute;
 	top: 70%;
@@ -42,9 +46,11 @@ button.small{
 	width: 5vmin;
 	height: 5vmin;
 }
+#btnClose:hover{
+	background-color: rgb(54, 40, 46);
+}
 
 #btnDisplay{
-	background-color: lightblue;
 	cursor: pointer;
 	position: absolute;
 	top: 90%;
