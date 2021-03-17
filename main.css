@@ -1,5 +1,6 @@
 ﻿button{
-	background-color: lightblue;
+	background-image: linear-gradient(lightblue, rgb(126, 155, 165));
+	/*background-color: lightblue;*/
 	min-width: fit-content;
 	min-height: fit-content;
 	text-align: center;
@@ -8,7 +9,8 @@
 	transition: 0.3s;
 }
 button:hover:enabled{
-    background-color: rgb(77, 95, 100);
+	background-image: linear-gradient(rgb(111, 136, 145), rgb(126, 155, 165));
+    /*background-color: rgb(77, 95, 100);*/
 }
 
 button.small{
@@ -36,7 +38,8 @@ button.small{
 }
 
 #btnClose{
-	background-color: rgb(177, 72, 115);
+	background-image: linear-gradient(rgb(177, 72, 115), rgb(112, 45, 73));
+	/*background-color: rgb(177, 72, 115);*/
 	font-weight: bold;
 	cursor: pointer;
 	position: absolute;
@@ -47,7 +50,8 @@ button.small{
 	height: 5vmin;
 }
 #btnClose:hover{
-	background-color: rgb(54, 40, 46);
+	background-image: linear-gradient(rgb(122, 51, 81), rgb(63, 25, 41));
+	/*background-color: rgb(54, 40, 46);*/
 }
 
 #btnDisplay{
@@ -60,7 +64,17 @@ button.small{
 	height: 5vmin;
 }
 
-#level{
+input{
+	background-image: linear-gradient(lightblue, rgb(126, 155, 165));
+}
+
+select{
+	background-image: linear-gradient(lightblue, rgb(126, 155, 165));
+}
+
+
+#level
+{
 	width: 15vmin;
 	height: 5vmin;
 	font-size: 3vmin;
@@ -82,7 +96,8 @@ button.small{
 }
 
 #menuContainer{
-	background: rgba(255,255,255,0.8);
+	background-image: linear-gradient(lightgray, gray);
+	/*background: rgba(255,255,255,0.8);*/
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -111,7 +126,8 @@ button.small{
 }
 
 #currentParamContainer{
-	background: rgba(255,255,255,0.8);
+	background-image: linear-gradient(lightgray, gray);
+	/*background: rgba(255,255,255,0.8);*/
 	position: absolute;
 	top: 0%;
 	left: 0%;
@@ -132,7 +148,9 @@ button.small{
 }
 
 #displayContainer {
-	background: lightgray;
+	border-radius: 1vmin;
+	border-style: solid;
+	background-image: linear-gradient(lightgray, gray);
 	overflow-y: scroll;
 	position: absolute;
 	top: 30%;
@@ -143,8 +161,12 @@ button.small{
   }
 
 #displayDataList {
+	border-width: thin;
+	border-radius: 1vmin;
+	border-style: solid;
 	list-style-position: inside;
-	background-color:lightblue;
+	background-image: linear-gradient(lightblue, rgb(126, 155, 165));
+	/*background-color:lightblue;*/
 	padding: 5%;
 	font-size: 5 vw;
 }
