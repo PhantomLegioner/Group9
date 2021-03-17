@@ -728,32 +728,29 @@ function selectLevel()
 {
   var levelText = levelChoice.options[levelChoice.selectedIndex].value;
   if (levelText == "Fire")
-    {
-      level = 0;
-      levelName = "Fire";
-      speed = 0.04;
-      console.log("Fire Level selected!")
-      displayMessage("Fire Level selected!");
-    
-    }
+  {
+    level = 0;
+    levelName = "Fire";
+    speed = 0.04;
+    displayMessage("Fire Level selected!");
+  
+  }
   if(levelText == "Ice")
-    {
-      level = 1;
-      levelName = "Ice";
-      speed = 0.03;
-      console.log("Ice Level selected!")
-      displayMessage("Ice Level selected!");
-    }
+  {
+    level = 1;
+    levelName = "Ice";
+    speed = 0.03;
+    displayMessage("Ice Level selected!");
+  }
 
   if(levelText == "Space")
-    {
-      level = 2;
-      levelName = "Space";
-      speed = 0.035;
-      console.log("Space Level selected!")
-      displayMessage("Space Level selected!");
-    }
-  console.log(level, " returned!");
+  {
+    level = 2;
+    levelName = "Space";
+    speed = 0.035;
+    displayMessage("Space Level selected!");
+  }
+  //console.log(level, " returned!");
   return level, levelName, speed;
 
 }
@@ -761,7 +758,6 @@ function selectLevel()
 //Display message for user
 function displayMessage(msg)
 {
-  console.log(msg)
   message.innerHTML=msg;
   message.style.opacity=1;
   setTimeout(function(){
@@ -841,7 +837,8 @@ function startGame()
   message.innerHTML="Loading..."
   message.style.opacity=1;
 
-  setTimeout(function(){ 
+  setTimeout(function()
+  { 
     destroyGame();
     initGame();
     menu.style.display='none';
@@ -853,6 +850,8 @@ function startGame()
 
 //MENUS END
 
+//DATABASE
+
 //hiding high scores
 var btnClose = document.getElementById('btnClose');;
 btnClose.addEventListener('click', hideScores);
@@ -863,8 +862,6 @@ function hideScores()
   listContainer.style.display='none';
 }
 
-//DATABASE
-
 //Database within the browser
 //Done with the help of Mozilla tutorial from: https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Client-side_storage
 
@@ -874,25 +871,30 @@ window.onload = function()
 let request = window.indexedDB.open('scores_db', 1);
 
 // if an error happens when trying to open connection to database
-request.onerror = function() {
-  console.log('Database failed to open');
+request.onerror = function() 
+{
+  alert('Database failed to open');
 };
 
 // Successful connection
-request.onsuccess = function() {
+request.onsuccess = function() 
+{
   console.log('Database was opened succesfully');
+
   // Store the opened database object in the db variable.
   db = request.result;
-  // Showing information from the database
-  //displayScores();
+
 };
 
 //Setup database initially or upgrade with a bigger version number
-request.onupgradeneeded = function(e) {
+request.onupgradeneeded = function(e) 
+{
   //get the reference to the opened database
   let db = e.target.result;
+
   //Create table in the database
   let highScores = db.createObjectStore('scores_os', { keyPath: 'id', autoIncrement: true});
+
   //What columns we will have in the table
   highScores.createIndex('username', 'username', {unique: false});
   highScores.createIndex('level', 'level', {unique: false});
@@ -900,7 +902,6 @@ request.onupgradeneeded = function(e) {
   highScores.createIndex('time', 'time', {unique: false});
 
   console.log('Database setup completed');
-
 }
 
 //Function for adding, saving to the database
@@ -918,28 +919,36 @@ function saveStats(e)
     displayMessage("Invalid username!");
     return;
   }
+
   scoreSaved=true;
   btnSave.disabled = true;
 
   //Destroy previous game and save information to database
   e.preventDefault();
+
   //Store username, level type, score and time of completion into an object
   let newItem = {username: username, level: levelName, score: score, time: timeElapsed };
+
   //Transaction to the database for adding
   let transaction = db.transaction(['scores_os'], 'readwrite');
+
   //Call object score that's already added to the database
   let highScores = transaction.objectStore('scores_os');
+
   //request to add newItem
   let request = highScores.add(newItem);
-  request.onsuccess = function () {
-    console.log('Success');
+  request.onsuccess = function () 
+  {
+    //console.log('Success');
   } 
+
   //transaction was completed
   transaction.oncomplete = function () 
   {
     displayMessage("Score saved!");
     listContainer.style.display="none";
   };
+
   transaction.onerror = function() 
   {
     alert("An error occurred! Data wasn't saved! properly");
@@ -972,7 +981,8 @@ function displayScores()
       
       if (cursor) 
       {
-        var entry={
+        var entry=
+        {
           username : cursor.value.username,
           level : cursor.value.level,
           score : cursor.value.score,
@@ -987,7 +997,8 @@ function displayScores()
       else 
       {
         //Sort entries w.r.t score and time
-        entries.sort(function(a,b){
+        entries.sort(function(a,b)
+        {
           var diff=b.score-a.score;
           if(diff!=0) return b.score-a.score;
           else return a.time-b.time;
@@ -1021,7 +1032,6 @@ function displayScores()
           time.textContent = entry.time +"s";
           time.style.fontSize="2vmin";
         }
-        //userNotifications.innerHTML = "Your data was displayed successfully!";
       }
     }   
   }
@@ -1030,38 +1040,48 @@ function displayScores()
 //Delete data
 var btndel = document.getElementById('btnDelete');
 btndel.addEventListener('click',deleteData)
-function deleteData(){
+function deleteData()
+{
   var choice = confirm("Note! Clicking OK will delete all data!");
-  if (choice == true) {
+  if (choice == true) 
+  {
 
-  let transaction = db.transaction(['scores_os'], 'readwrite');
-  // report on the success of the transaction completing, when everything is done
-  transaction.oncomplete = function() {
-    console.log("Transaction completed");
-    scoreSaved=false;
-    btnSave.disabled = false;
-  };
+    let transaction = db.transaction(['scores_os'], 'readwrite');
 
-  transaction.onerror = function() {
-    alert("Transaction not opened due to error: " + transaction.error);
-  };
+    // report on the success of the transaction completing, when everything is done
+    transaction.oncomplete = function() 
+    {
+      //console.log("Transaction completed");
+      listContainer.style.display="none";
+      if(state!="menu")
+      {
+        scoreSaved=false;
+        btnSave.disabled=false;
+      }
+    };
 
-  var objectstore = transaction.objectStore("scores_os");
+    transaction.onerror = function() 
+    {
+      alert("Transaction not opened due to error: " + transaction.error);
+    };
 
-  var objectstoreClearRequest = objectstore.clear();
+    var objectstore = transaction.objectStore("scores_os");
 
-  objectstoreClearRequest.onsuccess = function() {
-    //notify user
-    displayMessage("Scores deleted!");
-  }
-  objectstoreClearRequest.onerror = function () {
-    alert("An error occurred! Data wasn't deleted properly!");
+    var objectstoreClearRequest = objectstore.clear();
+
+    objectstoreClearRequest.onsuccess = function() 
+    {
+      //notify user
+      displayMessage("Scores deleted!");
+    }
+    objectstoreClearRequest.onerror = function () 
+    {
+      alert("An error occurred! Data wasn't deleted properly!");
   }
 }
-
-else {
+else 
+{
   console.log("Clearing database cancelled");
-
 }
 
 }
