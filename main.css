@@ -20,7 +20,7 @@ button.small{
 #btnPlay{
 	cursor: pointer;
 	position: absolute;
-	top: 70%;
+	top: 80%;
 	left: 50%;
 	width: 15vmin;
 	height: 5vmin;
@@ -30,9 +30,9 @@ button.small{
 #btnSave{
 	cursor: pointer;
 	position: absolute;
-	top: 70%;
-	left: 15%;
-	transform: translate(-50%,-50%);
+	top: 90%;
+	right: 5%;
+	transform: translate(0%,-60%);
 	width: 15vmin;
 	height: 5vmin;
 }
@@ -66,12 +66,19 @@ button.small{
 
 input{
 	background-image: linear-gradient(lightblue, rgb(126, 155, 165));
+	border-radius: 1vmin;
 }
 
 select{
 	background-image: linear-gradient(lightblue, rgb(126, 155, 165));
+	cursor: pointer;
+	border-radius: 1vmin;
 }
 
+select:hover:enabled{
+	background-image: linear-gradient(rgb(111, 136, 145), rgb(126, 155, 165));
+    /*background-color: rgb(77, 95, 100);*/
+}
 
 #level
 {
@@ -84,9 +91,8 @@ select{
 
 #inputUsername{
 	width: 15vmin;
-	height: 5vmin;
+	height: 4.5vmin;
 	font-size: 3vmin;
-	text-align: center;
 	background-color: lightblue;
 }
 
@@ -113,14 +119,14 @@ select{
 #usernameContainer{
 	font-size: 15px;
 	position: absolute;
-	top: 90%;
-	right: 5%;
+	top: 70%;
+	left: 5%;
 	transform: translate(0%,-60%);
 }
 
 #username{
 	width: 15vmin;
-	height: 4vmin;
+	height: 5vmin;
 	font-size: 15px;
 	text-align: center;
 }
@@ -142,7 +148,7 @@ select{
 #selectContainer{
 	display:block;
 	position: absolute;
-	top: 70%;
+	top: 68%;
 	right: 5%;
 	transform: translate(0%,-60%);
 }
@@ -195,7 +201,15 @@ label{
 	opacity: 0;
     transition: all 1s ease-in-out;
 	position: absolute;
-	top: 90%;
+	top: 88%;
+	left: 50%;
+	transform: translate(-50%,-100%);
+}
+
+#levelType{
+	opacity: 0;
+	position: absolute;
+	top: 88%;
 	left: 50%;
 	transform: translate(-50%,-100%);
 }
@@ -223,7 +237,8 @@ canvas{
 	color: #fff;
 	text-align: left;
 	border-radius: 6px;
-	padding: 5px 0;
+	padding: 5px;
+	font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 
 	/* Position the tooltip */
 	position: absolute;

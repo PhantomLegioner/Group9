@@ -18,10 +18,22 @@
           <div class="tooltip">Help
             <span class="tooltiptext">
               Move with WASD-keys. 
+              </br>
               Collect all 100 points and avoid the cylinders. 
-              You can also start the game by pressing R, and toggle music/effects by pressing 1 or 2 respectively.
-              To choose your username, write it in the username field and press the 'Enter' key or click outside the field. 
+              </br>
               Level selection affects the speed of the ghosts: ice(easy) -> space(normal) -> fire(hard).
+              </br>
+              To choose your username, write it in the username field and press the 'Enter' key or click outside the field. 
+              </br>
+              Keybord shortcuts : 
+              </br>
+              R : play/replay 
+            </br>
+              H : scores
+            </br>
+              1 : control background music
+            </br>
+              2 : control sonor effects
             </span>
           </div>
           <h3 id="loading">Loading...</h3>
@@ -36,14 +48,14 @@
           <div id="selectContainer">
             <label for="level">Select level</label>
             <select id="level">
-              <option value="Ice" selected>Ice (E)</option>
-              <option value="Space">Space (N)</option>
-              <option value="Fire">Fire (H)</option>
+              <option value="Ice" selected>Ice</option>
+              <option value="Space">Space</option>
+              <option value="Fire">Fire</option>
             </select> 
           </div>
           <div id ="usernameContainer">
-            <label for="inputUsername">Username</label>
-            <input id="inputUsername" type="text" value="">
+            <label for="inputUsername"></label>
+            <input id="inputUsername" type="text" value="" placeholder="Username">
           </div>
           <button id="btnPlay"></button>
           <button id="btnDisplay"></button>
@@ -56,8 +68,8 @@
       </div>
       <div id="currentParamContainer">
         <h3 id="currentScore"></h3>
-        <button class="small" id="backgroundMusicIcon">Play music(1)</button>
-        <button class="small" id="soundEffectIcon">Stop effects(2)</button>
+        <button class="small" id="backgroundMusicIcon">Play music</button>
+        <button class="small" id="soundEffectIcon">Stop effects</button>
       </div>
       <div id="threejsContainer"></div> 
     </div>

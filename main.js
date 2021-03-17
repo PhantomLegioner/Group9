@@ -700,8 +700,8 @@ function showMenus()
       btnSave.disabled = true;
       selectLevel();
       document.getElementById("title").innerHTML="3D PAC-MAN";
-      document.getElementById("btnPlay").innerHTML="Play(R)";
-      document.getElementById("btnDisplay").innerHTML="Scores(H)";
+      document.getElementById("btnPlay").innerHTML="Play";
+      document.getElementById("btnDisplay").innerHTML="Scores";
       document.getElementById("btnSave").innerHTML="Save data";
       //Draws a pacman on the start page
       
@@ -732,7 +732,7 @@ function showMenus()
 		{
       selectLevel();
       document.getElementById("title").innerHTML="You lost!";
-      document.getElementById("btnPlay").innerHTML="Replay(R)";
+      document.getElementById("btnPlay").innerHTML="Replay";
       btnSave.disabled = false;
       document.getElementById("playerName").innerHTML="Your username : " + username ;
       document.getElementById("levelType").innerHTML="Your level : " + levelName ;
@@ -743,7 +743,7 @@ function showMenus()
 		{
       selectLevel();
       document.getElementById("title").innerHTML="You won!";
-      document.getElementById("btnPlay").innerHTML="Replay(R)";
+      document.getElementById("btnPlay").innerHTML="Replay";
       btnSave.disabled = false;
       document.getElementById("playerName").innerHTML="Your username : " + username ;
       document.getElementById("levelType").innerHTML="Your level : " + levelName ;
@@ -862,12 +862,12 @@ function controlSounds()
   if(sound)
   {
     sound = false;
-    document.getElementById("soundEffectIcon").innerHTML="Play effects(2)";
+    document.getElementById("soundEffectIcon").innerHTML="Play effects";
   } 
   else 
   {
     sound = true;
-    document.getElementById("soundEffectIcon").innerHTML="Stop effects(2)";
+    document.getElementById("soundEffectIcon").innerHTML="Stop effects";
   }
 }
 
@@ -879,13 +879,13 @@ function controlMusic()
   {
     music = false;
     stopMusic();
-    document.getElementById("backgroundMusicIcon").innerHTML="Play music(1)";
+    document.getElementById("backgroundMusicIcon").innerHTML="Play music";
   } 
   else 
   {
     music = true;
     playSound(backgroundMusic);
-    document.getElementById("backgroundMusicIcon").innerHTML="Stop music(1)";
+    document.getElementById("backgroundMusicIcon").innerHTML="Stop music";
   }
 }
 
